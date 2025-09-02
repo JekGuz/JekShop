@@ -25,6 +25,7 @@ namespace JekShop.Controllers
                     Name = x.Name,
                     BuildDate = x.BuildDate,
                     TypeName = x.TypeName,
+                    Crew = x.Crew,
                 });
 
 
