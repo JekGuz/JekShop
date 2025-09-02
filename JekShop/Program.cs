@@ -1,3 +1,7 @@
+using JekShop.Data;
+using Microsoft.EntityFrameworkCore;
+
+
 namespace JekShop
 {
     public class Program
@@ -8,6 +12,11 @@ namespace JekShop
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
+            //buider.Services.AddScoper< SpaceshipServices>();
+
+            builder.Services.AddDbContext<JekShopContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnections")));
 
             var app = builder.Build();
 
