@@ -15,16 +15,23 @@
             <th scope="col">Crew</th>
         </tr>
     </thead>
+        @{
+            int nr = 1;
+            string mark = "*";
+        }
     <tbody>
             @foreach(var spaceships in Model)
             {
                 <tr>
-                    <td>Nr</td>
+                    <td>@nr. @mark</td>
                     <td>@spaceships.Name</td>
                     <td>@spaceships.TypeName</td>
                     <td>@spaceships.BuildDate</td>
                     <td>@spaceships.Crew</td>
                 </tr>
+                nr++;
+                //nr += 1;
+                mark += "*";
             }
         </tbody>
 </table>    
