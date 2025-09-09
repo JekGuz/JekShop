@@ -1,5 +1,7 @@
+using JekShop.Core.ServiceInterface;
 using JekShop.Data;
 using Microsoft.EntityFrameworkCore;
+using JekShop.ApplicationServices.Services;
 
 
 namespace JekShop
@@ -13,10 +15,11 @@ namespace JekShop
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
-            //buider.Services.AddScoper< SpaceshipServices>();
+            builder.Services.AddScoped<ISpaceshipsServices, SpaceshipsServices>();
 
             builder.Services.AddDbContext<JekShopContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnections")));
+
 
             var app = builder.Build();
 

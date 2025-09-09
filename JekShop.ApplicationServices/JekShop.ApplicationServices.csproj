@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\JekShop.Data\JekShop.Data.csproj" />
+  </ItemGroup>
+
 </Project>
