@@ -96,5 +96,16 @@ namespace JekShop.Controllers
 
             return View(vm);
         }
+        [HttpPost]
+        public async Task<IActionResult> DeleteConfirmation(Guid id)
+        {
+            var deleted = await _spaceshipsServices.Delete(id);
+            if (deleted == null)
+            {
+                return NotFound();
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
     }
 }

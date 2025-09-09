@@ -52,5 +52,16 @@ namespace JekShop.ApplicationServices.Services
 
             return result;
         }
+        public async Task <Spaceship>Delete(Guid id)
+        {
+            var remove = await _context.Spaceships
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            _context.Spaceships.Remove(remove);
+            await _context.SaveChangesAsync();
+
+            return remove;
+
+        }
     }
 }

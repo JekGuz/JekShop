@@ -8,5 +8,6 @@ namespace JekShop.Core.ServiceInterface
     {
         Task<Spaceship> Create(SpaceshipDto dto);
         Task<Spaceship> DetailAsync(Guid id);
+        Task<Spaceship> Delete(Guid id);
     }
 }
