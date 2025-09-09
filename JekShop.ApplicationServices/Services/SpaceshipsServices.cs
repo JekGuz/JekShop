@@ -7,6 +7,7 @@ using JekShop.Core.Domain;
 using JekShop.Core.Dto;
 using JekShop.Core.ServiceInterface;
 using JekShop.Data;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace JekShop.ApplicationServices.Services
@@ -42,6 +43,14 @@ namespace JekShop.ApplicationServices.Services
             await _context.SaveChangesAsync();
 
             return spaceship;
+        }
+
+        public async Task<Spaceship> DetailAsync(Guid id)
+        {
+            var result = await _context.Spaceships
+                .FirstOrDefaultAsync( x => x.Id == id );
+
+            return result;
         }
     }
 }
