@@ -1,7 +1,9 @@
 ﻿using System.Security.AccessControl;
+using JekShop.Core.Domain;
 using JekShop.Data;
 using JekShop.Models.Spaceships;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 namespace JekShop.Controllers
 {
@@ -29,6 +31,12 @@ namespace JekShop.Controllers
                 });
 
 
+            return View(result);
+        }
+        [HttpGet]
+        public IActionResult Create()
+        {
+            SpaceshipCreateViewModel result = new();
             return View(result);
         }
     }

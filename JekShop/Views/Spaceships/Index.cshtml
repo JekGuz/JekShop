@@ -1,8 +1,14 @@
 ﻿@model IEnumerable<JekShop.Models.Spaceships.SpaceshipsIndexViewModel>
-
+@{
+    int nr = 1;
+    string mark = "*";
+}
 
 <div class="text-center">
     <h1 class="display-4">Table SpaceShips</h1>
+</div>
+<div>
+    <a asp-action="create" asp-controller="spaceships" type="submit" class="btn btn-primary">Create</a>
 </div>
 <form action="/" method="post">
 <table class="table table-hover">
@@ -15,10 +21,6 @@
             <th scope="col">Crew</th>
         </tr>
     </thead>
-        @{
-            int nr = 1;
-            string mark = "*";
-        }
     <tbody>
             @foreach(var spaceships in Model)
             {
@@ -28,6 +30,9 @@
                     <td>@spaceships.TypeName</td>
                     <td>@spaceships.BuildDate</td>
                     <td>@spaceships.Crew</td>
+                    <td>
+
+                    </td>
                 </tr>
                 nr++;
                 //nr += 1;
