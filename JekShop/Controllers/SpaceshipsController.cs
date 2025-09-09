@@ -41,11 +41,11 @@ namespace JekShop.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            SpaceshipCreateViewModel result = new();
-            return View(result);
+            SpaceshipCreateUpdateVeiwModel result = new();
+            return View("CreateUpdate", result);
         }
         [HttpPost]  
-        public async Task<IActionResult> Create(SpaceshipCreateViewModel vm)
+        public async Task<IActionResult> Create(SpaceshipCreateUpdateVeiwModel vm)
         {
             var dto = new SpaceshipDto()
             {
@@ -107,5 +107,56 @@ namespace JekShop.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Update(Guid id)
+        {
+            var update = await _spaceshipsServices.DetailAsync(id);
+
+            if (update == null)
+            {
+                return NotFound();
+            }
+            var vm = new SpaceshipCreateUpdateVeiwModel();
+
+            vm.Id = update.Id;
+            vm.Name = update.Name;
+            vm.TypeName = update.TypeName;
+            vm.BuildDate = update.BuildDate;
+            vm.Crew = update.Crew;
+            vm.EnginePower = update.EnginePower;
+            vm.Passengers = update.Passengers;
+            vm.InnerVolume = update.InnerVolume;
+            vm.CreatedAt = update.CreatedAt;
+            vm.ModifiedAt = update.ModifiedAt;
+
+            return View("CreateUpdate", vm);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult>Update(SpaceshipCreateUpdateVeiwModel vm)
+        {
+            var dto = new SpaceshipDto()
+            {
+                Id = vm.Id,
+                Name = vm.Name,
+                TypeName = vm.TypeName,
+                BuildDate = vm.BuildDate,
+                Crew = vm.Crew,
+                EnginePower = vm.EnginePower,
+                Passengers = vm.Passengers,
+                InnerVolume = vm.InnerVolume,
+                CreatedAt = vm.CreatedAt,
+                ModifiedAt = vm.ModifiedAt,
+            };
+
+            var result = await _spaceshipsServices.Update(dto);
+
+            if (result == null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
     }
 }

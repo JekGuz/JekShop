@@ -8,6 +8,7 @@ using JekShop.Core.Dto;
 using JekShop.Core.ServiceInterface;
 using JekShop.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Update.Internal;
 
 
 namespace JekShop.ApplicationServices.Services
@@ -61,7 +62,26 @@ namespace JekShop.ApplicationServices.Services
             await _context.SaveChangesAsync();
 
             return remove;
+        }
+        public async Task<Spaceship> Update(SpaceshipDto dto)
+        {
+            Spaceship domain = new();
 
+            domain.Id = dto.Id;
+            domain.Name = dto.Name;
+            domain.TypeName = dto.TypeName;
+            domain.BuildDate = dto.BuildDate;
+            domain.Crew = dto.Crew;
+            domain.EnginePower = dto.EnginePower;
+            domain.Passengers = dto.Passengers;
+            domain.InnerVolume = dto.InnerVolume;
+            domain.CreatedAt = dto.CreatedAt;
+            domain.ModifiedAt = DateTime.Now;
+
+            _context.Spaceships.Update(domain);
+            await _context.SaveChangesAsync();
+
+            return domain;
         }
     }
 }
