@@ -27,17 +27,16 @@ namespace JekShop.ApplicationServices.Services
         {
             Kindergarten kindergarten = new Kindergarten();
 
-            Kindergarten.Id = Guid.NewGuid();
-            Kindergarten.GroupName = dto.GroupName;
-            Kindergarten.ChildrenCount = dto.ChildrenCount;
-            Kindergarten.BuildDate = dto.BuildDate;
-            Kindergarten.KindergartenName = dto.KindergartenName;
-            Kindergarten.TeacherName = dto.TeacherName;
-            Kindergarten.CreatedAt = DateTime.Now;
-            Kindergarten.UpdateAt = DateTime.Now;
+            kindergarten.Id = Guid.NewGuid();
+            kindergarten.GroupName = dto.GroupName;
+            kindergarten.ChildrenCount = dto.ChildrenCount;
+            kindergarten.KindergartenName = dto.KindergartenName;
+            kindergarten.TeacherName = dto.TeacherName;
+            kindergarten.CreateAt = DateTime.Now;
+            kindergarten.UpdateAt = DateTime.Now;
 
 
-            await _context.Kindergarten.AddAsync( kindergarten );
+            await _context.Kindergartens.AddAsync( kindergarten );
             await _context.SaveChangesAsync();
 
             return kindergarten;
@@ -45,17 +44,17 @@ namespace JekShop.ApplicationServices.Services
 
         public async Task<Kindergarten> DetailAsync(Guid id)
         {
-            var result = await _context.Kindergarten
+            var result = await _context.Kindergartens
                 .FirstOrDefaultAsync( x => x.Id == id );
 
             return result;
         }
         public async Task <Kindergarten>Delete(Guid id)
         {
-            var remove = await _context.Kindergarten
+            var remove = await _context.Kindergartens
                 .FirstOrDefaultAsync(x => x.Id == id);
 
-            _context.Kindergarten.Remove(remove);
+            _context.Kindergartens.Remove(remove);
             await _context.SaveChangesAsync();
 
             return remove;
@@ -68,10 +67,9 @@ namespace JekShop.ApplicationServices.Services
             domain.Id = Guid.NewGuid();
             domain.GroupName = dto.GroupName;
             domain.ChildrenCount = dto.ChildrenCount;
-            domain.BuildDate = dto.BuildDate;
             domain.KindergartenName = dto.KindergartenName;
             domain.TeacherName = dto.TeacherName;
-            domain.CreatedAt = DateTime.Now;
+            domain.CreateAt = DateTime.Now;
             domain.UpdateAt = DateTime.Now;
 
             _context.Kindergartens.Update(domain);
