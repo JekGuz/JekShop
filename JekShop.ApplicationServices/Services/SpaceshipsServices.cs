@@ -44,7 +44,7 @@ namespace JekShop.ApplicationServices.Services
             spaceship.CreatedAt = DateTime.Now;
             spaceship.ModifiedAt = DateTime.Now;
 
-            _fileServices.FileToApi(dto, spaceship);
+            _fileServices.FilesToApi(dto, spaceship);
 
             await _context.Spaceships.AddAsync( spaceship );
             await _context.SaveChangesAsync();

@@ -5,6 +5,6 @@ namespace JekShop.Core.ServiceInterface
 {
     public interface IFileServices
     {
-        void FileToApi(SpaceshipDto dto, Spaceship spaceship);
+        void FilesToApi(SpaceshipDto dto, Spaceship spaceship);
     }
 }
