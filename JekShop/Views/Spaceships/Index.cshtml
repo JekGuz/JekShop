@@ -32,8 +32,9 @@
                     <td>@spaceships.BuildDate</td>
                     <td>@spaceships.Crew</td>
                     <td>
-                        <a asp-action="delete" asp-controller="spaceships" asp-route-id="@spaceships.Id" class="btn btn-outline-danger">Delete</a>
+                        <a asp-action="details" asp-controller="spaceships" asp-route-id="@spaceships.Id" class="btn btn-outline-primary">Details</a>
                         <a asp-action="update" asp-controller="spaceships" asp-route-id="@spaceships.Id" class="btn btn-outline-warning">Update</a>
+                        <a asp-action="delete" asp-controller="spaceships" asp-route-id="@spaceships.Id" class="btn btn-outline-danger">Delete</a>
                     </td>
 
                 </tr>
