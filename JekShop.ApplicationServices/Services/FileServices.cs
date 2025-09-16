@@ -25,7 +25,7 @@ namespace JekShop.ApplicationServices.Services
         {
             if (dto.Files != null && dto.Files.Count > 0)
             {
-                if(!Directory.Exists(_webHost.ContentRootPath + "\\multipleFileUpload\\"))
+                if (!Directory.Exists(_webHost.ContentRootPath + "\\multipleFileUpload\\"))
                 {
                     Directory.CreateDirectory(_webHost.ContentRootPath + "\\multipleFileUpload\\");
                 }
@@ -53,6 +53,7 @@ namespace JekShop.ApplicationServices.Services
                         };
 
                         _context.FileToApis.AddAsync(path);
+                    }
                 }
             }
         }
