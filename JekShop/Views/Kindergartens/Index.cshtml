@@ -1,11 +1,11 @@
-﻿@model IEnumerable<JekShop.Models.Spaceships.SpaceshipsIndexViewModel>
+﻿@model IEnumerable<JekShop.Models.Kindergartens.KindergartensIndexViewModel>
 @{
     int nr = 1;
     string mark = "*";
 }
 
 <div class="text-center">
-    <h1 class="display-4">Table SpaceShips</h1>
+    <h1 class="display-4">Table Kindergarten</h1>
 </div>
 <div class="text-end">
     <a asp-action="create" asp-controller="spaceships" type="submit" class="btn btn-primary">Create</a>
@@ -15,32 +15,32 @@
     <thead>
         <tr>
             <th scope="col">Nr</th>
-            <th scope="col">Name</th>
-            <th scope="col">Type</th>
-            <th scope="col">Buil Date</th>
-            <th scope="col">Crew</th>
+                <th scope="col">GroupName</th>
+                <th scope="col">ChildrenCount</th>
+                <th scope="col">KindergartenName</th>
+                <th scope="col">TeacherName</th>
             <th scope="col">Buttons</th>
         </tr>
     </thead>
     <tbody>
-            @foreach(var spaceships in Model)
+            @foreach(var kindergartens in Model)
             {
                 <tr>
-                    <td>@nr. @mark</td>
-                    <td>@spaceships.Name</td>
-                    <td>@spaceships.TypeName</td>
-                    <td>@spaceships.BuildDate</td>
-                    <td>@spaceships.Crew</td>
+                    <td>@nr.</td>
+                    <td>@kindergartens.GroupName</td>
+                    <td>@kindergartens.ChildrenCount</td>
+                    <td>@kindergartens.KindergartenName</td>
+                    <td>@kindergartens.TeacherName</td>
                     <td>
-                        <a asp-action="details" asp-controller="spaceships" asp-route-id="@spaceships.Id" class="btn btn-outline-primary">Details</a>
-                        <a asp-action="update" asp-controller="spaceships" asp-route-id="@spaceships.Id" class="btn btn-outline-warning">Update</a>
-                        <a asp-action="delete" asp-controller="spaceships" asp-route-id="@spaceships.Id" class="btn btn-outline-danger">Delete</a>
+                        <a asp-action="details" asp-controller="kindergartens" asp-route-id="@kindergartens.Id" class="btn btn-outline-primary">Details</a>
+                        <a asp-action="update" asp-controller="kindergartens" asp-route-id="@kindergartens.Id" class="btn btn-outline-warning">Update</a>
+                        <a asp-action="delete" asp-controller="kindergartens" asp-route-id="@kindergartens.Id" class="btn btn-outline-danger">Delete</a>
                     </td>
 
                 </tr>
                 nr++;
                 //nr += 1;
-                mark += "*";
+                //mark += "*";
             }
         </tbody>
 </table>

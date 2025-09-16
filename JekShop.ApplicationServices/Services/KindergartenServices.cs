@@ -6,6 +6,7 @@ using JekShop.Core.Dto;
 using JekShop.Core.ServiceInterface;
 using JekShop.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
 
 
 
@@ -29,7 +30,7 @@ namespace JekShop.ApplicationServices.Services
 
             kindergarten.Id = Guid.NewGuid();
             kindergarten.GroupName = dto.GroupName;
-            kindergarten.ChildrenCount = dto.ChildrenCount;
+            kindergarten.ChildrenCount = (int)dto.ChildrenCount;
             kindergarten.KindergartenName = dto.KindergartenName;
             kindergarten.TeacherName = dto.TeacherName;
             kindergarten.CreateAt = DateTime.Now;
@@ -63,10 +64,10 @@ namespace JekShop.ApplicationServices.Services
         {
             Kindergarten domain = new();
 
-            domain.Id = dto.Id;
+            domain.Id = (Guid)dto.Id;
             domain.Id = Guid.NewGuid();
             domain.GroupName = dto.GroupName;
-            domain.ChildrenCount = dto.ChildrenCount;
+            domain.ChildrenCount = (int)dto.ChildrenCount;
             domain.KindergartenName = dto.KindergartenName;
             domain.TeacherName = dto.TeacherName;
             domain.CreateAt = DateTime.Now;

@@ -1,6 +1,6 @@
 ﻿namespace JekShop.Models.Kindergartens
 {
-    public class KindergartenIndexViewModel
+    public class KindergartensIndexViewModel
     {
         public Guid? Id { get; set; }
         public string? GroupName { get; set; }
