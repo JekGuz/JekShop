@@ -8,7 +8,7 @@ using JekShop.Core.Dto;
 
 namespace JekShop.Core.ServiceInterface
 {
-    internal class IKindergartenServices
+    internal interface IKindergartenServices
     {
         Task<Kindergarten> Create(KindergartenDto dto);
         Task<Kindergarten> DetailAsync(Guid id);
