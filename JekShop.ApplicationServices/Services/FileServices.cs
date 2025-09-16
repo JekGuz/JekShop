@@ -2,10 +2,11 @@
 using JekShop.Core.Dto;
 using JekShop.Data;
 using Microsoft.Extensions.Hosting;
+using JekShop.Core.ServiceInterface;
 
 namespace JekShop.ApplicationServices.Services
 {
-    public class FileServices
+    public class FileServices : IFileServices
     {
         private readonly JekShopContext _context;
         private readonly IHostEnvironment _webHost;
@@ -26,7 +27,7 @@ namespace JekShop.ApplicationServices.Services
             {
                 if(!Directory.Exists(_webHost.ContentRootPath + "\\multipleFileUpload\\"))
                 {
-                    Directory.CreateDirectory(_webHost.ContentRootPath + "\\multipleFileUpload\\")
+                    Directory.CreateDirectory(_webHost.ContentRootPath + "\\multipleFileUpload\\");
                 }
 
                 foreach (var file in dto.Files)

@@ -9,6 +9,7 @@ using JekShop.Core.ServiceInterface;
 using JekShop.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Update.Internal;
+using JekShop.Core.ServiceInterface;
 
 
 namespace JekShop.ApplicationServices.Services
@@ -16,14 +17,17 @@ namespace JekShop.ApplicationServices.Services
     public class SpaceshipsServices : ISpaceshipsServices
     {
         private readonly JekShopContext _context;
+        private readonly IFileServices _fileServices;
 
         // teha constructor
         public SpaceshipsServices
             (
-                JekShopContext context
+                JekShopContext context,
+                IFileServices fileServices
             )
         {
             _context = context;
+            _fileServices = fileServices;
         }
         public async Task<Spaceship> Create(SpaceshipDto dto)
         {
@@ -39,6 +43,8 @@ namespace JekShop.ApplicationServices.Services
             spaceship.InnerVolume = dto.InnerVolume;
             spaceship.CreatedAt = DateTime.Now;
             spaceship.ModifiedAt = DateTime.Now;
+
+            _fileServices.FileToApi(dto, spaceship);
 
             await _context.Spaceships.AddAsync( spaceship );
             await _context.SaveChangesAsync();
