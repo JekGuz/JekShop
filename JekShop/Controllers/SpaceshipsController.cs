@@ -158,6 +158,8 @@ namespace JekShop.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
+        [HttpGet]
         public async Task<IActionResult> Details(Guid id)
         {
             var spaceship = await _spaceshipsServices.DetailAsync(id);
