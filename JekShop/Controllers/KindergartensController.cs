@@ -4,6 +4,7 @@ using JekShop.Core.Domain;
 using JekShop.Core.Dto;
 using JekShop.Core.ServiceInterface;
 using JekShop.Data;
+using JekShop.Data.Migrations;
 using JekShop.Models.Kindergartens;
 using JekShop.Models.Spaceships;
 using Microsoft.AspNetCore.Mvc;
@@ -43,27 +44,25 @@ namespace JekShop.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            KindergartenCreateUpdateVeiwModel result = new();
+            KindergartensIndexViewModel result = new();
             return View("CreateUpdate", result);
         }
         [HttpPost]  
-        public async Task<IActionResult> Create(KindergartenCreateUpdateVeiwModel vm)
+        public async Task<IActionResult> Create(KindergartensIndexViewModel vm)
         {
-            var dto = new SpaceshipDto()
+            var dto = new KindergartenDto()
             {
                 Id = vm.Id,
-                Name = vm.Name,
-                TypeName = vm.TypeName,
-                BuildDate = vm.BuildDate,
-                Crew = vm.Crew,
-                EnginePower = vm.EnginePower,
-                Passengers = vm.Passengers,
-                InnerVolume = vm.InnerVolume,
-                CreatedAt = vm.CreatedAt,
-                ModifiedAt = vm.ModifiedAt,
+                GroupName = vm.GroupName,
+                ChildrenCount = vm.ChildrenCount,
+                KindergartenName = vm.KindergartenName,
+                TeacherName = vm.TeacherName,
+                CreateAt = vm.CreateAt,
+                UpdateAt = vm.UpdateAt,
+
             };
 
-            var result = await _spaceshipsServices.Create(dto);
+            var result = await _kindergartensServices.Create(dto);
 
             if (result == null)
             { 
@@ -76,32 +75,30 @@ namespace JekShop.Controllers
         [HttpGet]
         public async Task <IActionResult> Delete(Guid id)
         {
-            var spaceship = await _spaceshipsServices.DetailAsync(id);
+            var kindergarten = await _kindergartensServices.DetailAsync(id);
 
-            if (spaceship == null)
+            if (kindergarten == null)
             { 
                 return NotFound();
             }
 
             var vm = new KindergartenDeleteViewModel();
 
-            vm.Id = spaceship.Id;
-            vm.Name = spaceship.Name;
-            vm.TypeName = spaceship.TypeName;
-            vm.BuildDate = spaceship.BuildDate;
-            vm.Crew = spaceship.Crew;
-            vm.EnginePower = spaceship.EnginePower;
-            vm.Passengers = spaceship.Passengers;
-            vm.InnerVolume = spaceship.InnerVolume;
-            vm.CreatedAt = spaceship.CreatedAt;
-            vm.ModifiedAt = spaceship.ModifiedAt;
+            vm.Id = kindergarten.Id;
+            vm.GroupName = kindergarten.GroupName;
+            vm.ChildrenCount = kindergarten.ChildrenCount;
+            vm.KindergartenName = kindergarten.KindergartenName;
+            vm.TeacherName = kindergarten.TeacherName;
+            vm.CreateAt = kindergarten.CreateAt;
+            vm.UpdateAt = kindergarten.UpdateAt;
+
 
             return View(vm);
         }
         [HttpPost]
         public async Task<IActionResult> DeleteConfirmation(Guid id)
         {
-            var deleted = await _spaceshipsServices.Delete(id);
+            var deleted = await _kindergartensServices.Delete(id);
             if (deleted == null)
             {
                 return NotFound();
@@ -112,7 +109,7 @@ namespace JekShop.Controllers
         [HttpGet]
         public async Task<IActionResult> Update(Guid id)
         {
-            var update = await _spaceshipsServices.DetailAsync(id);
+            var update = await _kindergartensServices.DetailAsync(id);
 
             if (update == null)
             {
@@ -121,15 +118,13 @@ namespace JekShop.Controllers
             var vm = new KindergartenCreateUpdateVeiwModel();
 
             vm.Id = update.Id;
-            vm.Name = update.Name;
-            vm.TypeName = update.TypeName;
-            vm.BuildDate = update.BuildDate;
-            vm.Crew = update.Crew;
-            vm.EnginePower = update.EnginePower;
-            vm.Passengers = update.Passengers;
-            vm.InnerVolume = update.InnerVolume;
-            vm.CreatedAt = update.CreatedAt;
-            vm.ModifiedAt = update.ModifiedAt;
+            vm.GroupName = update.GroupName;
+            vm.ChildrenCount = update.ChildrenCount;
+            vm.KindergartenName = update.KindergartenName;
+            vm.TeacherName = update.TeacherName;
+            vm.CreateAt = update.CreateAt;
+            vm.UpdateAt = update.UpdateAt;
+
 
             return View("CreateUpdate", vm);
         }
@@ -137,21 +132,19 @@ namespace JekShop.Controllers
         [HttpPost]
         public async Task<IActionResult>Update(KindergartenCreateUpdateVeiwModel vm)
         {
-            var dto = new SpaceshipDto()
+            var dto = new KindergartenDto()
             {
                 Id = vm.Id,
-                Name = vm.Name,
-                TypeName = vm.TypeName,
-                BuildDate = vm.BuildDate,
-                Crew = vm.Crew,
-                EnginePower = vm.EnginePower,
-                Passengers = vm.Passengers,
-                InnerVolume = vm.InnerVolume,
-                CreatedAt = vm.CreatedAt,
-                ModifiedAt = vm.ModifiedAt,
+                GroupName = vm.GroupName,
+                ChildrenCount = vm.ChildrenCount,
+                KindergartenName = vm.KindergartenName,
+                TeacherName = vm.TeacherName,
+                CreateAt = vm.CreateAt,
+                UpdateAt = vm.UpdateAt,
+
             };
 
-            var result = await _spaceshipsServices.Update(dto);
+            var result = await _kindergartensServices.Update(dto);
 
             if (result == null)
             {
@@ -164,25 +157,22 @@ namespace JekShop.Controllers
         [HttpGet]
         public async Task<IActionResult> Details(Guid id)
         {
-            var spaceship = await _spaceshipsServices.DetailAsync(id);
+            var kindergarten = await _kindergartensServices.DetailAsync(id);
 
-            if (spaceship == null)
+            if (kindergarten == null)
             {
                 return NotFound();
             }
 
             var vm = new KindergartenDeleteViewModel();
 
-            vm.Id = spaceship.Id;
-            vm.Name = spaceship.Name;
-            vm.TypeName = spaceship.TypeName;
-            vm.BuildDate = spaceship.BuildDate;
-            vm.Crew = spaceship.Crew;
-            vm.EnginePower = spaceship.EnginePower;
-            vm.Passengers = spaceship.Passengers;
-            vm.InnerVolume = spaceship.InnerVolume;
-            vm.CreatedAt = spaceship.CreatedAt;
-            vm.ModifiedAt = spaceship.ModifiedAt;
+            vm.Id = kindergarten.Id;
+            vm.GroupName = kindergarten.GroupName;
+            vm.ChildrenCount = kindergarten.ChildrenCount;
+            vm.KindergartenName = kindergarten.KindergartenName;
+            vm.TeacherName = kindergarten.TeacherName;
+            vm.CreateAt = kindergarten.CreateAt;
+            vm.UpdateAt = kindergarten.UpdateAt;
 
             return View(vm);
         }

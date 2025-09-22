@@ -81,7 +81,7 @@ namespace JekShop.Controllers
                 return NotFound();
             }
 
-            var vm = new KindergartenDeleteViewModel();
+            var vm = new SpaceshipDeleteViewModel();
 
             vm.Id = spaceship.Id;
             vm.Name = spaceship.Name;
@@ -169,7 +169,7 @@ namespace JekShop.Controllers
                 return NotFound();
             }
 
-            var vm = new KindergartenDeleteViewModel();
+            var vm = new SpaceshipDeleteViewModel();
 
             vm.Id = spaceship.Id;
             vm.Name = spaceship.Name;
