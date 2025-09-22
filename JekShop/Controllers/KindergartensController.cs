@@ -44,11 +44,11 @@ namespace JekShop.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            KindergartensIndexViewModel result = new();
+            KindergartenCreateUpdateVeiwModel result = new();
             return View("CreateUpdate", result);
         }
         [HttpPost]  
-        public async Task<IActionResult> Create(KindergartensIndexViewModel vm)
+        public async Task<IActionResult> Create(KindergartenCreateUpdateVeiwModel vm)
         {
             var dto = new KindergartenDto()
             {

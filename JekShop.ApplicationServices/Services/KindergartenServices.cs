@@ -65,7 +65,6 @@ namespace JekShop.ApplicationServices.Services
             Kindergarten domain = new();
 
             domain.Id = (Guid)dto.Id;
-            domain.Id = Guid.NewGuid();
             domain.GroupName = dto.GroupName;
             domain.ChildrenCount = (int)dto.ChildrenCount;
             domain.KindergartenName = dto.KindergartenName;

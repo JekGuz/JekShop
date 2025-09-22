@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using JekShop.Core.Domain;
+using Microsoft.AspNetCore.Http;
 
 namespace JekShop.Core.Dto
 {
