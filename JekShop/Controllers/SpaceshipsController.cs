@@ -41,11 +41,11 @@ namespace JekShop.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            KindergartenCreateUpdateVeiwModel result = new();
+            SpaceshipCreateUpdateVeiwModel result = new();
             return View("CreateUpdate", result);
         }
         [HttpPost]  
-        public async Task<IActionResult> Create(KindergartenCreateUpdateVeiwModel vm)
+        public async Task<IActionResult> Create(SpaceshipCreateUpdateVeiwModel vm)
         {
             var dto = new SpaceshipDto()
             {
@@ -116,7 +116,7 @@ namespace JekShop.Controllers
             {
                 return NotFound();
             }
-            var vm = new KindergartenCreateUpdateVeiwModel();
+            var vm = new SpaceshipCreateUpdateVeiwModel();
 
             vm.Id = update.Id;
             vm.Name = update.Name;
@@ -133,7 +133,7 @@ namespace JekShop.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult>Update(KindergartenCreateUpdateVeiwModel vm)
+        public async Task<IActionResult>Update(SpaceshipCreateUpdateVeiwModel vm)
         {
             var dto = new SpaceshipDto()
             {
