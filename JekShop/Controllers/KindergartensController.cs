@@ -1,38 +1,40 @@
 ﻿using System.Security.AccessControl;
+using JekShop.ApplicationServices.Services;
 using JekShop.Core.Domain;
 using JekShop.Core.Dto;
 using JekShop.Core.ServiceInterface;
 using JekShop.Data;
+using JekShop.Models.Kindergartens;
 using JekShop.Models.Spaceships;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 namespace JekShop.Controllers
 {
-    public class SpaceshipsController : Controller
+    public class KindergartensController : Controller
     {
         private readonly JekShopContext _context;
-        private readonly ISpaceshipsServices _spaceshipsServices;
-        public SpaceshipsController
+        private readonly IKindergartenServices _kindergartensServices;
+        public KindergartensController
             (
                 JekShopContext context,
-                ISpaceshipsServices spaceshipsServices
+                IKindergartenServices kindergatensServices
             )
         {
             _context = context;
-            _spaceshipsServices = spaceshipsServices;
+            _kindergartensServices = kindergatensServices;
         }
 
         public IActionResult Index()
         {
-            var result = _context.Spaceships
-                .Select(x => new SpaceshipsIndexViewModel
+            var result = _context.Kindergartens
+                .Select(x => new KindergartensIndexViewModel
                 {
                     Id = x.Id,
-                    Name = x.Name,
-                    BuildDate = x.BuildDate,
-                    TypeName = x.TypeName,
-                    Crew = x.Crew,
+                    GroupName = x.GroupName,
+                    ChildrenCount = x.ChildrenCount,
+                    KindergartenName = x.KindergartenName,
+                    TeacherName = x.TeacherName,
                 });
 
 

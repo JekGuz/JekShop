@@ -1,0 +1,45 @@
+﻿@model JekShop.Models.Kindergartens.KindergartenCreateUpdateVeiwModel
+
+<h1>Create</h1>
+
+<div>
+    <form method="post" enctype="multipart/form-data">
+    <input asp-for="Id" type="hidden" />
+        <input asp-for="CreateAt" type="hidden" />
+        <input asp-for="UpdateAt" type="hidden" />
+
+    <div class="form-group row">
+        <label asp-for="GroupName" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-10">
+            <input asp-for="GroupName" class="form-control" />
+        </div>
+    </div>
+            
+    <div class="form-group row">
+            <label asp-for="ChildrenCount" class="col-sm-2 col-form-label"></label>
+         <div class="col-sm-10">
+                <input asp-for="ChildrenCount" class="form-control" />
+         </div>
+    </div>
+
+    <div class="form-group row">
+            <label asp-for="KindergartenName" class="col-sm-2 col-form-label"></label>
+         <div class="col-sm-10">
+                <input asp-for="KindergartenName" class="form-control" />
+         </div>
+    </div>
+
+    <div class="form-group row">
+            <label asp-for="TeacherName" class="col-sm-2 col-form-label"></label>
+          <div class="col-sm-10">
+                <input asp-for="TeacherName" class="form-control" />
+          </div>
+    </div>
+
+        <input asp-action="create" asp-controller="spaceships" type="submit" class="btn btn-success" value="Create" />
+        
+        <a asp-action="Index" asp-controller="spaceships" class="btn btn-secondary">Back</a>
+
+
+    </form>
+</div>

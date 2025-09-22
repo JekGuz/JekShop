@@ -2,7 +2,7 @@
 
 namespace JekShop.Models.Spaceships
 {
-    public class SpaceshipCreateUpdateVeiwModel
+    public class KindergartenCreateUpdateVeiwModel
     {
         public Guid? Id { get; set; }
         public string? Name { get; set; }
