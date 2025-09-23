@@ -69,7 +69,7 @@ namespace JekShop.ApplicationServices.Services
             domain.ChildrenCount = (int)dto.ChildrenCount;
             domain.KindergartenName = dto.KindergartenName;
             domain.TeacherName = dto.TeacherName;
-            domain.CreateAt = DateTime.Now;
+            domain.CreateAt = dto.CreateAt;
             domain.UpdateAt = DateTime.Now;
 
             _context.Kindergartens.Update(domain);
