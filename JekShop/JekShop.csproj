@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="wwwroot\multipleFileUpload\01673d9f-b9ea-423c-90ee-8e4f1824d25d_cat.png" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.8" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.8">
       <PrivateAssets>all</PrivateAssets>
@@ -26,6 +22,10 @@
   <ItemGroup>
     <ProjectReference Include="..\JekShop.ApplicationServices\JekShop.ApplicationServices.csproj" />
     <ProjectReference Include="..\JekShop.Data\JekShop.Data.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\multipleFileUpload\" />
   </ItemGroup>
 
 </Project>

@@ -8,6 +8,8 @@ using JekShop.Models.Spaceships;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace JekShop.Controllers
 {
@@ -21,11 +23,13 @@ namespace JekShop.Controllers
         public SpaceshipsController
             (
                 JekShopContext context,
-                ISpaceshipsServices spaceshipsServices
+                ISpaceshipsServices spaceshipsServices,
+                IFileServices fileServices
             )
         {
             _context = context;
             _spaceshipsServices = spaceshipsServices;
+            _fileServices = fileServices;
         }
 
         public IActionResult Index()
@@ -43,6 +47,8 @@ namespace JekShop.Controllers
 
             return View(result);
         }
+
+
         [HttpGet]
         public IActionResult Create()
         {
@@ -94,6 +100,14 @@ namespace JekShop.Controllers
                 return NotFound();
             }
 
+            var images = await _context.FileToApis
+                .Where(x => x.SpaceshipId == id)
+                .Select(y => new ImageVeiwModel
+                {
+                    FilePath = y.ExistingFilePath,
+                    ImageId = y.Id,
+                }).ToArrayAsync();
+
             var vm = new SpaceshipDeleteViewModel();
 
             vm.Id = spaceship.Id;
@@ -106,17 +120,23 @@ namespace JekShop.Controllers
             vm.InnerVolume = spaceship.InnerVolume;
             vm.CreatedAt = spaceship.CreatedAt;
             vm.ModifiedAt = spaceship.ModifiedAt;
+            vm.Images.AddRange(images);
+
 
             return View(vm);
         }
         [HttpPost]
         public async Task<IActionResult> DeleteConfirmation(Guid id)
         {
+
             var deleted = await _spaceshipsServices.Delete(id);
+            
             if (deleted == null)
             {
                 return NotFound();
             }
+
+
             return RedirectToAction(nameof(Index));
         }
 
@@ -234,7 +254,7 @@ namespace JekShop.Controllers
             //kui image on null, siis returib Index vaatele
 
             // 1) Собираем dto из viewModel
-            var dto = new FileToApiDto
+            var dto = new FileToApiDto()
             {
                 Id = vm.ImageId,
                 // SpaceshipId = vm.SpaceshipId,
@@ -242,10 +262,10 @@ namespace JekShop.Controllers
             };
 
             // 2) Вызываем сервис удаления
-            var result = await _fileServices.RemoveImageFromApi(dto);
+            var image = await _fileServices.RemoveImageFromApi(dto);
 
             // 3) Если картинка не найдена → возврат к списку
-            if (result == null)
+            if (image == null)
                 return RedirectToAction(nameof(Index));
 
             // 4) Если удалена успешно → тоже возврат к списку

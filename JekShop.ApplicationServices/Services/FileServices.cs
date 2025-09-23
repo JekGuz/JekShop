@@ -83,8 +83,31 @@ namespace JekShop.ApplicationServices.Services
             await _context.SaveChangesAsync();
 
             return imageId;
-
-
         }
+        public async Task<List<FileToApi>> RemoveImagesFromAppi(FileToApiDto[] dtos)
+        {
+            //foreach, milles sees toimub failide kustutamine
+            foreach (var dto in dtos)
+            {
+                var imageId = await _context.FileToApis
+                .FirstOrDefaultAsync(x => x.Id == dto.Id);  // чтобы найти что в базе данных
+
+                var filePath = _webHost.ContentRootPath + "\\wwwroot\\multipleFileUpload\\"
+                    + imageId.ExistingFilePath;
+
+                // Kui fail on olemas, siis kustuta ära 
+                if (File.Exists(filePath))
+                {
+                    File.Delete(filePath);
+                }
+
+                // 4) Удаляем запись из базы
+                _context.FileToApis.Remove(imageId);
+                await _context.SaveChangesAsync();
+            }
+
+            return null;
+        }
+
     }
 }

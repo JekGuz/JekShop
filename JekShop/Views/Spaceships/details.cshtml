@@ -76,15 +76,13 @@
     </dl>
 
     <dl class="row">
-        <div class="form-group row">
-            <label asp-for="Files" class="col-sm-2 col-form-label"></label>
-        </div>
+
         <div>
         @foreach (var image in Model.Images)
         {
             <partial name="_Images" model="image" />
         }
-        </div>
+
     </dl>
 
 

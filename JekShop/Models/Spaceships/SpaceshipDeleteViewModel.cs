@@ -11,7 +11,6 @@
         public int? Passengers { get; set; }
         public int? InnerVolume { get; set; }
 
-        public List<IFormFile> Files { get; set; }
         public List<ImageVeiwModel> Images { get; set; }
             = new List<ImageVeiwModel>();
 
