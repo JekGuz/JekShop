@@ -36,6 +36,8 @@ namespace JekShop
             app.UseHttpsRedirection();
             app.UseRouting();
 
+            app.UseStaticFiles();
+
             app.UseAuthorization();
 
             app.MapStaticAssets();

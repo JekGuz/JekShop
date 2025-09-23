@@ -23,17 +23,18 @@ namespace JekShop.ApplicationServices.Services
 
         public void FilesToApi(SpaceshipDto dto, Spaceship spaceship)
         {
+
             if (dto.Files != null && dto.Files.Count > 0)
             {
-                if (!Directory.Exists(_webHost.ContentRootPath + "\\multipleFileUpload\\"))
+                if (!Directory.Exists(_webHost.ContentRootPath + "wwwroot\\multipleFileUpload\\"))
                 {
-                    Directory.CreateDirectory(_webHost.ContentRootPath + "\\multipleFileUpload\\");
+                    Directory.CreateDirectory(_webHost.ContentRootPath + "wwwroot\\multipleFileUpload\\");
                 }
 
                 foreach (var file in dto.Files)
                 {
                     // muutuja string uploadFolder ja siina laetakse failid
-                    string uploadFolder = Path.Combine(_webHost.ContentRootPath, "multipleFileUpload");
+                    string uploadFolder = Path.Combine(_webHost.ContentRootPath, "wwwroot", "multipleFileUpload");
 
                     //muutuja string uniqueFileName ja siin genereeritakse uus Guid ja lisatakse see faili ette
                     string uniqueFileName = Guid.NewGuid().ToString() + "_" + file.FileName;
