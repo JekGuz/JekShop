@@ -125,6 +125,15 @@ namespace JekShop.Controllers
             {
                 return NotFound();
             }
+
+            var images = await _context.FileToApis
+                .Where(x => x.SpaceshipId == id)
+                .Select(y => new ImageVeiwModel
+                {
+                    FilePath = y.ExistingFilePath,
+                    ImageId = y.Id,
+                }).ToArrayAsync();
+
             var vm = new SpaceshipCreateUpdateVeiwModel();
 
             vm.Id = update.Id;
@@ -137,6 +146,8 @@ namespace JekShop.Controllers
             vm.InnerVolume = update.InnerVolume;
             vm.CreatedAt = update.CreatedAt;
             vm.ModifiedAt = update.ModifiedAt;
+            vm.Images.AddRange(images);
+
 
             return View("CreateUpdate", vm);
         }
@@ -156,6 +167,7 @@ namespace JekShop.Controllers
                 InnerVolume = vm.InnerVolume,
                 CreatedAt = vm.CreatedAt,
                 ModifiedAt = vm.ModifiedAt,
+
             };
 
             var result = await _spaceshipsServices.Update(dto);
