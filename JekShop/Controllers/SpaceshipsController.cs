@@ -6,6 +6,7 @@ using JekShop.Data;
 using JekShop.Models.Spaceships;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 
 namespace JekShop.Controllers
 {
@@ -59,6 +60,14 @@ namespace JekShop.Controllers
                 InnerVolume = vm.InnerVolume,
                 CreatedAt = vm.CreatedAt,
                 ModifiedAt = vm.ModifiedAt,
+                Files = vm.Files,
+                FileToApiDtos = vm.Images
+                    .Select(x => new FileToApiDto
+                    {
+                        Id = x.ImageId,
+                        ExistingFilePath = x.FilePath,
+                        SpaceshipId = x.SpaceshipId
+                    }).ToArray()
             };
 
             var result = await _spaceshipsServices.Create(dto);
@@ -168,6 +177,14 @@ namespace JekShop.Controllers
             {
                 return NotFound();
             }
+
+            var images = await _context.FileToApis
+                .Where(x => x.SpaceshipId == id)
+                .Select(y => new ImageVeiwModel
+                {
+                    FilePath = y.ExistingFilePath,
+                    ImageId = y.Id,
+                }).ToArrayAsync();
 
             var vm = new SpaceshipDeleteViewModel();
 

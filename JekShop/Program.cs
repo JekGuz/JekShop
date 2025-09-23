@@ -17,6 +17,8 @@ namespace JekShop
 
             builder.Services.AddScoped<ISpaceshipsServices, SpaceshipsServices>();
 
+            builder.Services.AddScoped<IFileServices, FileServices>();
+
             builder.Services.AddDbContext<JekShopContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnections")));
 

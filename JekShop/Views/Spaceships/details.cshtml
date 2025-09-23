@@ -75,6 +75,19 @@
         </div>
     </dl>
 
+    <dl class="row">
+        <div class="form-group row">
+            <label asp-for="Files" class="col-sm-2 col-form-label"></label>
+            @Html.DisplayFor(Model => Model.Files)
+        </div>
+    </dl>
+
+    @foreach (var image in Model.Images)
+    {
+        <partial name ="_Images" model ="image" />
+    }
+
+
         <a asp-action="Index" asp-controller="spaceships" class="btn btn-secondary">Back</a>
 
 </div>

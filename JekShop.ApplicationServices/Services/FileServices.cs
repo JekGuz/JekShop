@@ -36,9 +36,8 @@ namespace JekShop.ApplicationServices.Services
                     string uploadFolder = Path.Combine(_webHost.ContentRootPath, "multipleFileUpload");
 
                     //muutuja string uniqueFileName ja siin genereeritakse uus Guid ja lisatakse see faili ette
-                    string uniqueFileName = Guid.NewGuid().ToString() + "_" + file.Name;
-
-                    // muutuja string filePath kombineeritakse ja lisatakse koos kausta unikaalse nimega
+                    string uniqueFileName = Guid.NewGuid().ToString() + "_" + file.FileName;
+                                        // muutuja string filePath kombineeritakse ja lisatakse koos kausta unikaalse nimega
                     string filePath = Path.Combine(uploadFolder, uniqueFileName);
 
                     using (var fileStream = new FileStream(filePath, FileMode.Create))
