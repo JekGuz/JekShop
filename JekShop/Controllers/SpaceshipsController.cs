@@ -1,4 +1,5 @@
 ﻿using System.Security.AccessControl;
+using JekShop.ApplicationServices.Services;
 using JekShop.Core.Domain;
 using JekShop.Core.Dto;
 using JekShop.Core.ServiceInterface;
@@ -14,6 +15,9 @@ namespace JekShop.Controllers
     {
         private readonly JekShopContext _context;
         private readonly ISpaceshipsServices _spaceshipsServices;
+        private readonly IFileServices _fileServices;
+
+
         public SpaceshipsController
             (
                 JekShopContext context,
@@ -167,6 +171,14 @@ namespace JekShop.Controllers
                 InnerVolume = vm.InnerVolume,
                 CreatedAt = vm.CreatedAt,
                 ModifiedAt = vm.ModifiedAt,
+                Files = vm.Files,
+                FileToApiDtos = vm.Images
+                    .Select(x => new FileToApiDto
+                    {
+                        Id = x.ImageId,
+                        ExistingFilePath = x.FilePath,
+                        SpaceshipId = x.SpaceshipId
+                    }).ToArray()
 
             };
 
@@ -213,6 +225,31 @@ namespace JekShop.Controllers
             vm.Images.AddRange(images);
 
             return View(vm);
+        }
+        [HttpPost]
+        public async Task<IActionResult> RemoveImage(ImageVeiwModel vm)
+        {
+            //peate läbi viewModeli edastama Id dto -sse
+            //tuleb esile kustuda removeImageFromAppi meetod
+            //kui image on null, siis returib Index vaatele
+
+            // 1) Собираем dto из viewModel
+            var dto = new FileToApiDto
+            {
+                Id = vm.ImageId,
+                // SpaceshipId = vm.SpaceshipId,
+                // ExistingFilePath = vm.FilePath
+            };
+
+            // 2) Вызываем сервис удаления
+            var result = await _fileServices.RemoveImageFromApi(dto);
+
+            // 3) Если картинка не найдена → возврат к списку
+            if (result == null)
+                return RedirectToAction(nameof(Index));
+
+            // 4) Если удалена успешно → тоже возврат к списку
+            return RedirectToAction(nameof(Index));
         }
     }
 

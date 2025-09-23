@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <None Include="wwwroot\multipleFileUpload\01673d9f-b9ea-423c-90ee-8e4f1824d25d_cat.png" />
-    <None Include="wwwroot\multipleFileUpload\0cf73a5b-d9bb-4816-9ffb-2f691ad92a0f_ti -3d kaust.jpg" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,8 +1,9 @@
 ﻿using JekShop.Core.Domain;
 using JekShop.Core.Dto;
-using JekShop.Data;
-using Microsoft.Extensions.Hosting;
 using JekShop.Core.ServiceInterface;
+using JekShop.Data;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 
 namespace JekShop.ApplicationServices.Services
 {
@@ -10,6 +11,7 @@ namespace JekShop.ApplicationServices.Services
     {
         private readonly JekShopContext _context;
         private readonly IHostEnvironment _webHost;
+
 
         public FileServices
             (
@@ -20,6 +22,7 @@ namespace JekShop.ApplicationServices.Services
             _context = context;
             _webHost = webHost;
         }
+
 
         public void FilesToApi(SpaceshipDto dto, Spaceship spaceship)
         {
@@ -56,6 +59,32 @@ namespace JekShop.ApplicationServices.Services
                     }
                 }
             }
+        }
+
+        public async Task<FileToApi?> RemoveImageFromApi(FileToApiDto dto)
+        {
+
+            // Meil on vaja leida file andmebaasist läbi id ülesse
+            // 1) Находим запись файла в БД
+            var imageId = await _context.FileToApis
+                .FirstOrDefaultAsync(x => x.Id == dto.Id);  // чтобы найти что в базе данных
+
+            var filePath = _webHost.ContentRootPath + "\\wwwroot\\multipleFileUpload\\"
+                + imageId.ExistingFilePath;
+
+            // Kui fail on olemas, siis kustuta ära 
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+            }
+
+            // 4) Удаляем запись из базы
+            _context.FileToApis.Remove(imageId);
+            await _context.SaveChangesAsync();
+
+            return imageId;
+
+
         }
     }
 }
