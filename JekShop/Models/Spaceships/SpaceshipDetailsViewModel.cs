@@ -1,6 +1,6 @@
 ﻿namespace JekShop.Models.Spaceships
 {
-    public class SpaceshipDetailsViewModel
+    public class RealEstateDetailsViewModel
     {
         public Guid? Id { get; set; }
         public string? Name { get; set; }
