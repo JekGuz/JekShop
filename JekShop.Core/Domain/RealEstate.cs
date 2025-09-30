@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace JekShop.Core.Domain
 {
-    internal class RealEstate
+    public class RealEstate
     {
         public Guid? Id { get; set; }
         public double? Area { get; set; }
