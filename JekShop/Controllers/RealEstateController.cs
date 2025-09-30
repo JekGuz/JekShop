@@ -6,9 +6,7 @@ using JekShop.Core.ServiceInterface;
 using JekShop.Data;
 using JekShop.Data.Migrations;
 using JekShop.Models.RealEstate;
-using JekShop.Models.Spaceships;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 namespace JekShop.Controllers
 {
@@ -50,19 +48,19 @@ namespace JekShop.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(RealEstateCreateUpdateVeiwModel vm)
         {
-            var dto = new KindergartenDto()
+            var dto = new RealEstateDto()
             {
                 Id = vm.Id,
-                GroupName = vm.GroupName,
-                ChildrenCount = vm.ChildrenCount,
-                KindergartenName = vm.KindergartenName,
-                TeacherName = vm.TeacherName,
+                Area = vm.Area,
+                Location = vm.Location,
+                RoomNumber = vm.RoomNumber,
+                BuildingType = vm.BuildingType,
                 CreateAt = vm.CreateAt,
-                UpdateAt = vm.UpdateAt,
+                ModifiedAt = vm.ModifiedAt,
 
             };
 
-            var result = await _kindergartensServices.Create(dto);
+            var result = await _RealEstateServices.Create(dto);
 
             if (result == null)
             {
@@ -75,22 +73,22 @@ namespace JekShop.Controllers
         [HttpGet]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var kindergarten = await _kindergartensServices.DetailAsync(id);
+            var RealEstate = await _RealEstateServices.DetailAsync(id);
 
-            if (kindergarten == null)
+            if (RealEstate == null)
             {
                 return NotFound();
             }
 
-            var vm = new KindergartenDeleteViewModel();
+            var vm = new RealEstateDeleteViewModel();
 
-            vm.Id = kindergarten.Id;
-            vm.GroupName = kindergarten.GroupName;
-            vm.ChildrenCount = kindergarten.ChildrenCount;
-            vm.KindergartenName = kindergarten.KindergartenName;
-            vm.TeacherName = kindergarten.TeacherName;
-            vm.CreateAt = kindergarten.CreateAt;
-            vm.UpdateAt = kindergarten.UpdateAt;
+            vm.Id = RealEstate.Id;
+            vm.Area = RealEstate.Area;
+            vm.Location = RealEstate.Location;
+            vm.RoomNumber = RealEstate.RoomNumber;
+            vm.BuildingType = RealEstate.BuildingType;
+            vm.CreateAt = RealEstate.CreateAt;
+            vm.ModifiedAt = RealEstate.ModifiedAt;
 
 
             return View(vm);
@@ -98,7 +96,7 @@ namespace JekShop.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteConfirmation(Guid id)
         {
-            var deleted = await _kindergartensServices.Delete(id);
+            var deleted = await _RealEstateServices.Delete(id);
             if (deleted == null)
             {
                 return NotFound();
@@ -109,42 +107,42 @@ namespace JekShop.Controllers
         [HttpGet]
         public async Task<IActionResult> Update(Guid id)
         {
-            var update = await _kindergartensServices.DetailAsync(id);
+            var update = await _RealEstateServices.DetailAsync(id);
 
             if (update == null)
             {
                 return NotFound();
             }
-            var vm = new KindergartenCreateUpdateVeiwModel();
+            var vm = new RealEstateCreateUpdateVeiwModel();
 
             vm.Id = update.Id;
-            vm.GroupName = update.GroupName;
-            vm.ChildrenCount = update.ChildrenCount;
-            vm.KindergartenName = update.KindergartenName;
-            vm.TeacherName = update.TeacherName;
+            vm.Area = update.Area;
+            vm.Location = update.Location;
+            vm.RoomNumber = update.RoomNumber;
+            vm.BuildingType = update.BuildingType;
             vm.CreateAt = update.CreateAt;
-            vm.UpdateAt = update.UpdateAt;
+            vm.ModifiedAt = update.ModifiedAt;
 
 
             return View("CreateUpdate", vm);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Update(KindergartenCreateUpdateVeiwModel vm)
+        public async Task<IActionResult> Update(RealEstateCreateUpdateVeiwModel vm)
         {
-            var dto = new KindergartenDto()
+            var dto = new RealEstateDto()
             {
                 Id = vm.Id,
-                GroupName = vm.GroupName,
-                ChildrenCount = vm.ChildrenCount,
-                KindergartenName = vm.KindergartenName,
-                TeacherName = vm.TeacherName,
+                Area = vm.Area,
+                Location = vm.Location,
+                RoomNumber = vm.RoomNumber,
+                BuildingType = vm.BuildingType,
                 CreateAt = vm.CreateAt,
-                UpdateAt = vm.UpdateAt,
+                ModifiedAt = vm.ModifiedAt,
 
             };
 
-            var result = await _kindergartensServices.Update(dto);
+            var result = await _RealEstateServices.Update(dto);
 
             if (result == null)
             {
@@ -157,22 +155,22 @@ namespace JekShop.Controllers
         [HttpGet]
         public async Task<IActionResult> Details(Guid id)
         {
-            var kindergarten = await _kindergartensServices.DetailAsync(id);
+            var RealEstate = await _RealEstateServices.DetailAsync(id);
 
-            if (kindergarten == null)
+            if (RealEstate == null)
             {
                 return NotFound();
             }
 
-            var vm = new KindergartenDeleteViewModel();
+            var vm = new RealEstateDeleteViewModel();
 
-            vm.Id = kindergarten.Id;
-            vm.GroupName = kindergarten.GroupName;
-            vm.ChildrenCount = kindergarten.ChildrenCount;
-            vm.KindergartenName = kindergarten.KindergartenName;
-            vm.TeacherName = kindergarten.TeacherName;
-            vm.CreateAt = kindergarten.CreateAt;
-            vm.UpdateAt = kindergarten.UpdateAt;
+            vm.Id = RealEstate.Id;
+            vm.Area = RealEstate.Area;
+            vm.Location = RealEstate.Location;
+            vm.RoomNumber = RealEstate.RoomNumber;
+            vm.BuildingType = RealEstate.BuildingType;
+            vm.CreateAt = RealEstate.CreateAt;
+            vm.ModifiedAt = RealEstate.ModifiedAt;
 
             return View(vm);
         }

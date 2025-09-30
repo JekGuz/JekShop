@@ -9,7 +9,7 @@ namespace JekShop.Models.RealEstate
         public string? Location { get; set; }
         public int? RoomNumber { get; set; }
         public string? BuildingType { get; set; }
-        public DateTime? CreatedAt { get; set; }
+        public DateTime? CreateAt { get; set; }
         public DateTime? ModifiedAt { get; set; }
     }
 }
