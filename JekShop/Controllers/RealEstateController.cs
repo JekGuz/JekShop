@@ -17,11 +17,11 @@ namespace JekShop.Controllers
         public RealEstateController
             (
                 JekShopContext context,
-                IRealEstateServices realEstateServices
+                IRealEstateServices RealEstateServices
             )
         {
             _context = context;
-            _RealEstateServices = realEstateServices;
+            _RealEstateServices = RealEstateServices;
         }
 
         public IActionResult Index()

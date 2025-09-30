@@ -1,12 +1,6 @@
 ﻿@model JekShop.Models.RealEstate.RealEstateCreateUpdateVeiwModel
-@if (Model.Id.HasValue)
-{
-    <h1>Update</h1>
-}
-else
-{
-    <h1>Create</h1>
-}
+
+<h1>Create</h1>
 
 <div>
     <form method="post" enctype="multipart/form-data">
@@ -43,14 +37,8 @@ else
     </div>
 
 
-        @if (Model.Id.HasValue)
-        {
-            <input asp-action="update" asp-controller="RealEstate" type="submit" class="btn btn-primary" value="update" />
-        }
-        else
-        {
-            <input asp-action="create" asp-controller="RealEstate" type="submit" class="btn btn-primary" value="Create" />
-        }
+        <input asp-action="create" asp-controller="RealEstate" type="submit" class="btn btn-success" value="Create" />
+        
         <a asp-action="Index" asp-controller="RealEstate" class="btn btn-secondary">Back</a>
 
 
