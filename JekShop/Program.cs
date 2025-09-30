@@ -19,6 +19,8 @@ namespace JekShop
 
             builder.Services.AddScoped<IFileServices, FileServices>();
 
+            builder.Services.AddScoped<IRealEstateServices, RealEstateServis>();
+
 
 
             builder.Services.AddDbContext<JekShopContext>(options =>
