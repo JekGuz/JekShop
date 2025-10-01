@@ -1,8 +1,8 @@
-﻿using System.Data;
+﻿
 
 namespace JekShop.Models.Spaceships
 {
-    public class RealEstateCreateUpdateVeiwModel
+    public class SpaceshipCreateUpdateVeiwModel
     {
         public Guid? Id { get; set; }
         public string? Name { get; set; }

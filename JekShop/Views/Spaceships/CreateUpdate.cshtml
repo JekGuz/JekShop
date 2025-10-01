@@ -1,4 +1,4 @@
-﻿@model JekShop.Models.Spaceships.RealEstateCreateUpdateVeiwModel
+﻿@model JekShop.Models.Spaceships.SpaceshipCreateUpdateVeiwModel
 @if (Model.Id.HasValue)
 {
     <h1>Update</h1>
@@ -90,7 +90,6 @@ else
             <input asp-action="create" asp-controller="spaceships" type="submit" class="btn btn-primary" value="Create" />
         }
         <a asp-action="Index" asp-controller="spaceships" class="btn btn-secondary">Back</a>
-
 
     </form>
 </div>

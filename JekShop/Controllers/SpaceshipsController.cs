@@ -52,11 +52,11 @@ namespace JekShop.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            RealEstateCreateUpdateVeiwModel result = new();
+            SpaceshipCreateUpdateVeiwModel result = new();
             return View("CreateUpdate", result);
         }
         [HttpPost]  
-        public async Task<IActionResult> Create(RealEstateCreateUpdateVeiwModel vm)
+        public async Task<IActionResult> Create(SpaceshipCreateUpdateVeiwModel vm)
         {
             var dto = new SpaceshipDto()
             {
@@ -158,7 +158,7 @@ namespace JekShop.Controllers
                     ImageId = y.Id,
                 }).ToArrayAsync();
 
-            var vm = new RealEstateCreateUpdateVeiwModel();
+            var vm = new SpaceshipCreateUpdateVeiwModel();
 
             vm.Id = update.Id;
             vm.Name = update.Name;
@@ -177,7 +177,7 @@ namespace JekShop.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult>Update(RealEstateCreateUpdateVeiwModel vm)
+        public async Task<IActionResult>Update(SpaceshipCreateUpdateVeiwModel vm)
         {
             var dto = new SpaceshipDto()
             {
