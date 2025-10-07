@@ -41,7 +41,7 @@ namespace JekShop.ApplicationServices.Services
 
                     //muutuja string uniqueFileName ja siin genereeritakse uus Guid ja lisatakse see faili ette
                     string uniqueFileName = Guid.NewGuid().ToString() + "_" + file.FileName;
-                                        // muutuja string filePath kombineeritakse ja lisatakse koos kausta unikaalse nimega
+                    // muutuja string filePath kombineeritakse ja lisatakse koos kausta unikaalse nimega
                     string filePath = Path.Combine(uploadFolder, uniqueFileName);
 
                     using (var fileStream = new FileStream(filePath, FileMode.Create))
@@ -109,5 +109,34 @@ namespace JekShop.ApplicationServices.Services
             return null;
         }
 
+        public void UploadFilesToDatabase(RealEstateDto dto, RealEstate domain)
+        {
+            // tuleb ära kontrollida, kas üks fail või mitu faili on 
+            // kui tuleb mitu faili, siis igaks juhuks tuleks kasutada foreach 
+            // foreach sees kasutada using-t ja ära mappida 
+            // salvestada andmed andmebaasi
+
+            if (dto.Files != null && dto.Files.Count > 0)
+            {
+                foreach (var file in dto.Files)
+                {
+                    using (var target = new MemoryStream())
+                    {
+                        FileToDatabase files = new FileToDatabase
+                        {
+                            Id = Guid.NewGuid(),
+                            ImageTitle = file.FileName,
+                            RealEstateId = domain.Id
+                        };
+
+                        file.CopyTo(target);
+                        files.ImageData = target.ToArray();
+
+                        _context.FileToDatabases.AddAsync(files);
+                    }
+                }
+
+            }
+        }
     }
 }

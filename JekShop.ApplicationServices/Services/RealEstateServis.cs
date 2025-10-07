@@ -10,13 +10,16 @@ namespace JekShop.ApplicationServices.Services
     public class RealEstateServis : IRealEstateServices
     {
         private readonly JekShopContext _context;
+        private readonly IFileServices _fileServices;
 
         public RealEstateServis
             (
-            JekShopContext context
+            JekShopContext context,
+            IFileServices fileServices
             )
         {
             _context = context;
+            _fileServices = fileServices;
         }
         public async Task <RealEstate> Create(RealEstateDto dto)
         {
@@ -27,8 +30,15 @@ namespace JekShop.ApplicationServices.Services
             realestate.Location = dto.Location;
             realestate.RoomNumber = dto.RoomNumber;
             realestate.BuildingType = dto.BuildingType;
-            realestate.CreateAt = dto.CreateAt;
-            realestate.ModifiedAt = dto.ModifiedAt;
+            realestate.CreateAt = DateTime.Now;
+            realestate.ModifiedAt = DateTime.Now;
+
+            // peaks kontrollima, kas failid on olemas või mitte
+            if (dto.Files != null)
+            {
+                _fileServices.UploadFilesToDatabase(dto, realestate);
+            }
+            
 
             await _context.RealEstates.AddAsync(realestate);
             await _context.SaveChangesAsync();
@@ -63,7 +73,7 @@ namespace JekShop.ApplicationServices.Services
             domain.RoomNumber = dto.RoomNumber;
             domain.BuildingType = dto.BuildingType;
             domain.CreateAt = dto.CreateAt;
-            domain.ModifiedAt = dto.ModifiedAt;
+            domain.ModifiedAt = DateTime.Now;
 
             _context.RealEstates.Update(domain);
             await _context.SaveChangesAsync();

@@ -9,6 +9,9 @@ namespace JekShop.Models.RealEstate
         public string? Location { get; set; }
         public int? RoomNumber { get; set; }
         public string? BuildingType { get; set; }
+        public List<IFormFile>? Files { get; set; }
+        public List<RealEstateImageVeiwModel> Images { get; set; }
+            = new List<RealEstateImageVeiwModel>();
         public DateTime? CreateAt { get; set; }
         public DateTime? ModifiedAt { get; set; }
     }

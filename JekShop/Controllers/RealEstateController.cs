@@ -55,6 +55,16 @@ namespace JekShop.Controllers
                 Location = vm.Location,
                 RoomNumber = vm.RoomNumber,
                 BuildingType = vm.BuildingType,
+                Files = vm.Files,
+                Image = vm.Images
+                    .Select(x => new FileToDatabaseDto
+                {
+                    Id = x.Id,
+                    ImageTitle = x.ImageTitle,
+                    ImageData = x.ImageData,
+                    RealEstateId = x.RealEstateId
+                    }).ToArray(),
+
                 CreateAt = vm.CreateAt,
                 ModifiedAt = vm.ModifiedAt,
 
