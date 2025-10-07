@@ -59,11 +59,11 @@ namespace JekShop.Controllers
                 Files = vm.Files,
                 Image = vm.Images
                     .Select(x => new FileToDatabaseDto
-                {
-                    Id = x.Id,
-                    ImageTitle = x.ImageTitle,
-                    ImageData = x.ImageData,
-                    RealEstateId = x.RealEstateId
+                    {
+                        Id = x.Id,
+                        ImageTitle = x.ImageTitle,
+                        ImageData = x.ImageData,
+                        RealEstateId = x.RealEstateId
                     }).ToArray(),
 
                 CreateAt = vm.CreateAt,
@@ -91,16 +91,7 @@ namespace JekShop.Controllers
                 return NotFound();
             }
 
-            var realEstateImages = await _context.FileToDatabases
-                .Where(x => x.RealEstateId == id)
-                .Select(y => new RealEstateImageVeiwModel
-                {
-                    RealEstateId = y.RealEstateId,
-                    Id = y.Id,
-                    ImageData = y.ImageData,
-                    ImageTitle = y.ImageTitle,
-                    Image = $"data:image/gif;base64,{Convert.ToBase64String(y.ImageData)}"
-                }).ToListAsync();
+            var realEstateImages = await ShowImages(id);
 
             var vm = new RealEstateDeleteViewModel();
 
@@ -136,16 +127,7 @@ namespace JekShop.Controllers
                 return NotFound();
             }
 
-            var realEstateImages = await _context.FileToDatabases
-                .Where(x => x.RealEstateId == id)
-                .Select(y => new RealEstateImageVeiwModel
-                {
-                    RealEstateId = y.RealEstateId,
-                    Id = y.Id,
-                    ImageData = y.ImageData,
-                    ImageTitle = y.ImageTitle,
-                    Image = $"data:image/gif;base64,{Convert.ToBase64String(y.ImageData)}"
-                }).ToListAsync();
+            var realEstateImages = await ShowImages(id);
 
             var vm = new RealEstateCreateUpdateVeiwModel();
 
@@ -206,16 +188,7 @@ namespace JekShop.Controllers
                 return NotFound();
             }
 
-            var photo = await _context.FileToDatabases
-    .           Where(x => x.RealEstateId == id)
-                    .Select(y => new RealEstateImageVeiwModel
-        {
-            RealEstateId = y.Id,
-            Id = y.Id,
-            ImageData = y.ImageData,
-            ImageTitle = y.ImageTitle,
-            Image = $"data:image/gif;base64,{Convert.ToBase64String(y.ImageData)}"
-        }).ToListAsync();
+            var photo = await ShowImages(id);
 
             var vm = new RealEstateDetailsViewModel();
 
@@ -230,6 +203,22 @@ namespace JekShop.Controllers
 
             return View(vm);
         }
-    }
 
+
+        public async Task<RealEstateImageVeiwModel[]> ShowImages(Guid id)
+        {
+            var images = await _context.FileToDatabases
+                .Where(x => x.RealEstateId == id)
+                .Select(y => new RealEstateImageVeiwModel
+                {
+                    RealEstateId = y.RealEstateId,
+                    Id = y.Id,
+                    ImageData = y.ImageData,
+                    ImageTitle = y.ImageTitle,
+                    Image = string.Format("data:image/gif;base64, {0}", Convert.ToBase64String(y.ImageData))
+                }).ToArrayAsync();
+
+            return images;
+        }
+    }
 }
