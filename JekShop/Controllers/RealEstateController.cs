@@ -91,6 +91,17 @@ namespace JekShop.Controllers
                 return NotFound();
             }
 
+            var realEstateImages = await _context.FileToDatabases
+                .Where(x => x.RealEstateId == id)
+                .Select(y => new RealEstateImageVeiwModel
+                {
+                    RealEstateId = y.RealEstateId,
+                    Id = y.Id,
+                    ImageData = y.ImageData,
+                    ImageTitle = y.ImageTitle,
+                    Image = $"data:image/gif;base64,{Convert.ToBase64String(y.ImageData)}"
+                }).ToListAsync();
+
             var vm = new RealEstateDeleteViewModel();
 
             vm.Id = RealEstate.Id;
@@ -100,7 +111,7 @@ namespace JekShop.Controllers
             vm.BuildingType = RealEstate.BuildingType;
             vm.CreateAt = RealEstate.CreateAt;
             vm.ModifiedAt = RealEstate.ModifiedAt;
-
+            vm.Images.AddRange(realEstateImages);
 
             return View(vm);
         }
@@ -124,6 +135,18 @@ namespace JekShop.Controllers
             {
                 return NotFound();
             }
+
+            var realEstateImages = await _context.FileToDatabases
+                .Where(x => x.RealEstateId == id)
+                .Select(y => new RealEstateImageVeiwModel
+                {
+                    RealEstateId = y.RealEstateId,
+                    Id = y.Id,
+                    ImageData = y.ImageData,
+                    ImageTitle = y.ImageTitle,
+                    Image = $"data:image/gif;base64,{Convert.ToBase64String(y.ImageData)}"
+                }).ToListAsync();
+
             var vm = new RealEstateCreateUpdateVeiwModel();
 
             vm.Id = update.Id;
@@ -133,6 +156,7 @@ namespace JekShop.Controllers
             vm.BuildingType = update.BuildingType;
             vm.CreateAt = update.CreateAt;
             vm.ModifiedAt = update.ModifiedAt;
+            vm.Images.AddRange(realEstateImages);
 
 
             return View("CreateUpdate", vm);
@@ -150,6 +174,15 @@ namespace JekShop.Controllers
                 BuildingType = vm.BuildingType,
                 CreateAt = vm.CreateAt,
                 ModifiedAt = vm.ModifiedAt,
+                Files = vm.Files,
+                Image = vm.Images
+                    .Select(x => new FileToDatabaseDto
+                    {
+                        Id = x.Id,
+                        ImageTitle = x.ImageTitle,
+                        ImageData = x.ImageData,
+                        RealEstateId = x.RealEstateId
+                    }).ToArray(),
 
             };
 
