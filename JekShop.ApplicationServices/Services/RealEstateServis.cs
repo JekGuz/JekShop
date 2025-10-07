@@ -25,7 +25,7 @@ namespace JekShop.ApplicationServices.Services
         {
             RealEstate realestate = new RealEstate();
 
-            realestate.Id = dto.Id;
+            realestate.Id = Guid.NewGuid();
             realestate.Area = dto.Area;
             realestate.Location = dto.Location;
             realestate.RoomNumber = dto.RoomNumber;

@@ -7,6 +7,7 @@ using JekShop.Data;
 using JekShop.Data.Migrations;
 using JekShop.Models.RealEstate;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace JekShop.Controllers
 {
@@ -172,7 +173,18 @@ namespace JekShop.Controllers
                 return NotFound();
             }
 
-            var vm = new RealEstateDeleteViewModel();
+            var photo = await _context.FileToDatabases
+    .           Where(x => x.RealEstateId == id)
+                    .Select(y => new RealEstateImageVeiwModel
+        {
+            RealEstateId = y.Id,
+            Id = y.Id,
+            ImageData = y.ImageData,
+            ImageTitle = y.ImageTitle,
+            Image = $"data:image/gif;base64,{Convert.ToBase64String(y.ImageData)}"
+        }).ToListAsync();
+
+            var vm = new RealEstateDetailsViewModel();
 
             vm.Id = RealEstate.Id;
             vm.Area = RealEstate.Area;
@@ -181,6 +193,7 @@ namespace JekShop.Controllers
             vm.BuildingType = RealEstate.BuildingType;
             vm.CreateAt = RealEstate.CreateAt;
             vm.ModifiedAt = RealEstate.ModifiedAt;
+            vm.Images.AddRange(photo);
 
             return View(vm);
         }

@@ -1,4 +1,4 @@
-﻿@model JekShop.Models.RealEstate.RealEstateDeleteViewModel
+﻿@model JekShop.Models.RealEstate.RealEstateDetailsViewModel
 
 <h1>Details</h1>
 
@@ -54,6 +54,23 @@
             @Html.DisplayFor(Model => Model.ModifiedAt)
         </div>
     </dl>
+
+    @if (Model.Images != null && Model.Images.Any())
+    {
+        <div>
+            @foreach (var photo in Model.Images)
+            {
+                <div style="margin-bottom: 15px;">
+                    <img src="@photo.Image" alt="@photo.ImageTitle" style="max-width: 300px;" />
+                    <p>@photo.ImageTitle</p>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <p>No photos available.</p>
+    }
 
     <a asp-action="Index" asp-controller="RealEstate" class="btn btn-secondary">Back</a>
 
