@@ -65,13 +65,11 @@
     </dl>
 
    
-    <form asp-action="DeleteConfirmation">
+<form asp-action="DeleteConfirmation" method="post">
         <input type="hidden" asp-for="Id" />
 
         <input type="submit" value="Delete" class="btn btn-danger" />
-        <a asp-action="Index" asp-controller="kindergarten" class="btn btn-secondary">Back</a>
 
+        <a asp-action="Index" asp-controller="Kindergartens" class="btn btn-secondary">Back</a>
     </form>
-
-
 </div>

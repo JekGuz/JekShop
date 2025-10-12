@@ -1,4 +1,5 @@
-﻿@model JekShop.Models.Kindergartens.KindergartenImageViewModel 
-<div class="form-group row col-sm-4 offset-2"> 
-    <div>@Model.ImageTitle</div> <img class="card-image-top" src="@Model.Image" asp-append-version="true" /> 
-    </div>
+﻿@model JekShop.Models.Kindergartens.KindergartenImageViewModel
+<div class="form-group row col-sm-4 offset-2">
+    <div>@Model.ImageTitle</div>
+    <img class="card-image-top" src="@Model.Image" alt="@Model.ImageTitle" style="max-width: 300px;" />
+</div>
