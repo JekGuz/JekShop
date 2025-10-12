@@ -6,7 +6,6 @@ using JekShop.Core.ServiceInterface;
 using JekShop.Data;
 using JekShop.Data.Migrations;
 using JekShop.Models.Kindergartens;
-using JekShop.Models.Spaceships;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 
@@ -57,6 +56,17 @@ namespace JekShop.Controllers
                 ChildrenCount = vm.ChildrenCount,
                 KindergartenName = vm.KindergartenName,
                 TeacherName = vm.TeacherName,
+                Files = vm.Files,
+                Image = vm.Images
+                    .Select(x => new FileToDatabaseDto
+                    {
+                        Id = x.Id,
+                        ImageTitle = x.ImageTitle,
+                        ImageData = x.ImageData,
+                        KindergartenId = x.KindergartenId
+                    }).ToArray(),
+
+
                 CreateAt = vm.CreateAt,
                 UpdateAt = vm.UpdateAt,
 
