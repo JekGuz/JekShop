@@ -13,5 +13,7 @@ namespace JekShop.Data
         public DbSet<FileToApi> FileToApis { get; set; }
 
         public DbSet<Kindergarten> Kindergartens { get; set; }
+
+        public DbSet<FileToDatabase> FileToDatabases { get; set; }
     }
 }

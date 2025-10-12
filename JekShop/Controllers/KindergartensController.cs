@@ -8,6 +8,7 @@ using JekShop.Data.Migrations;
 using JekShop.Models.Kindergartens;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 
 namespace JekShop.Controllers
 {
@@ -188,6 +189,8 @@ namespace JekShop.Controllers
                 return NotFound();
             }
 
+            var photo = await ShowImages(id);
+
             var vm = new KindergartenDeleteViewModel();
 
             vm.Id = kindergarten.Id;
@@ -197,8 +200,25 @@ namespace JekShop.Controllers
             vm.TeacherName = kindergarten.TeacherName;
             vm.CreateAt = kindergarten.CreateAt;
             vm.UpdateAt = kindergarten.UpdateAt;
+            vm.Images.AddRange(photo);
 
             return View(vm);
+        }
+
+        public async Task<KindergartenImageViewModel[]> ShowImages(Guid id)
+        {
+            var images = await _context.FileToDatabases
+                .Where(x => x.KindergartenId == id)
+                .Select(y => new KindergartenImageViewModel
+                {
+                    KindergartenId = y.KindergartenId,
+                    Id = y.Id,
+                    ImageData = y.ImageData,
+                    ImageTitle = y.ImageTitle,
+                    Image = string.Format("data:image/gif;base64, {0}", Convert.ToBase64String(y.ImageData))
+                }).ToArrayAsync();
+
+            return images;
         }
     }
 
