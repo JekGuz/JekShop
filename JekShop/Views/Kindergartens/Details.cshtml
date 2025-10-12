@@ -54,6 +54,23 @@
         </div>
     </dl>
 
+    @if (Model.Images != null && Model.Images.Any())
+    {
+        <div>
+            @foreach (var photo in Model.Images)
+            {
+                <div style="margin-bottom: 15px;">
+                    <img src="@photo.Image" alt="@photo.ImageTitle" style="max-width: 300px;" />
+                    <p>@photo.ImageTitle</p>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <p>No photos available.</p>
+    }
+
     <a asp-action="Index" asp-controller="kindergartens" class="btn btn-secondary">Back</a>
 
 </div>
