@@ -125,6 +125,9 @@ namespace JekShop.Controllers
             {
                 return NotFound();
             }
+
+            var KindergartenImage = await ShowImages(id);
+
             var vm = new KindergartenCreateUpdateVeiwModel();
 
             vm.Id = update.Id;
@@ -134,6 +137,7 @@ namespace JekShop.Controllers
             vm.TeacherName = update.TeacherName;
             vm.CreateAt = update.CreateAt;
             vm.UpdateAt = update.UpdateAt;
+            vm.Images.AddRange(KindergartenImage);
 
 
             return View("CreateUpdate", vm);
@@ -151,6 +155,16 @@ namespace JekShop.Controllers
                 TeacherName = vm.TeacherName,
                 CreateAt = vm.CreateAt,
                 UpdateAt = vm.UpdateAt,
+
+                Files = vm.Files,
+                Image = vm.Images
+                    .Select(x => new FileToDatabaseDto
+                    {
+                        Id = x.Id,
+                        ImageTitle = x.ImageTitle,
+                        ImageData = x.ImageData,
+                        KindergartenId = x.KindergartenId
+                    }).ToArray(),
 
             };
 
