@@ -12,29 +12,24 @@ namespace JekShop.Core.Dto
         public string? PrecipitationType { get; set; }
         public bool? IsDayTime { get; set; }
         public TemperatureDto? Temperature { get; set; }
-        public ImperialDto? Imperial { get; set; }
+
         public string? MobileLink { get; set; }
         public string? Link { get; set; }
     }
 
     public class TemperatureDto
     {
-        public MetricDto? Metric { get; set; }
+        public WeatherValueDto? Metric { get; set; }
+        public WeatherValueDto? Imperial { get; set; }
     }
 
-    public class MetricDto
+    public class WeatherValueDto
     {
         public double? Value { get; set; }
         public string? Unit { get; set; }
         public int? UnitType { get; set; }
     }
 
-    public class ImperialDto
-    {
-        public double? Value { get; set; }
-        public string? Unit { get; set; }
-        public int? UnitType { get; set; }
-    }
 }
 
 
