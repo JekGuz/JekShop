@@ -10,7 +10,7 @@ else
 }
 
 <div>
-    <!-- Основная форма создания/обновления -->
+    <!-- Основная форма -->
     <form asp-action="@(Model.Id.HasValue ? "Update" : "Create")"
           asp-controller="Kindergartens"
           method="post"
@@ -21,6 +21,7 @@ else
         <input asp-for="CreateAt" type="hidden" />
         <input asp-for="UpdateAt" type="hidden" />
 
+        <!-- Поля формы -->
         <div class="form-group row">
             <label asp-for="GroupName" class="col-sm-2 col-form-label"></label>
             <div class="col-sm-10">
@@ -58,37 +59,37 @@ else
             </div>
         </div>
 
-    </form>
-
-    <!-- ВНЕ основной формы — вставляется блок с изображениями -->
-    @if (Model.Images != null && Model.Images.Any())
-    {
-        <hr />
-        @foreach (var images in Model.Images)
+        <!-- Блок уже загруженных изображений -->
+        @if (Model.Images != null && Model.Images.Any())
         {
-            <div class="mb-3">
-                <!-- Частичное представление с картинкой -->
-                <partial name="_Images" model="images" />
+            <hr />
+            @foreach (var images in Model.Images)
+            {
+                <div class="mb-3">
+                    <partial name="_Images" model="images" />
 
-                <!-- Отдельная форма для кнопки Remove Image -->
-                <form action="/Kindergartens/RemoveImage" method="post" class="d-inline">
-                    <input type="hidden" name="imageId" value="@images.Id" />
-                    <button type="submit" class="btn btn-outline-danger"
-                            formaction="/Kindergartens/RemoveImage" formmethod="post">
-                        Remove Image
-                    </button>
-                </form>
-                <br />
-                <br />
-                <form>
-                    <!-- кнопки создания/обновления -->
-                    <button type="submit" class="btn btn-primary">
-                        @(Model.Id.HasValue ? "Update" : "Create")
-                    </button>
-                    <a asp-action="Index" asp-controller="Kindergartens" class="btn btn-secondary">Back</a>
-                </form>
-
-            </div>
+                    <form action="/Kindergartens/RemoveImage" method="post" class="d-inline">
+                        <input type="hidden" name="imageId" value="@images.Id" />
+                        <button type="submit"
+                                class="btn btn-outline-danger"
+                                formaction="/Kindergartens/RemoveImage"
+                                formmethod="post">
+                            Remove Image
+                        </button>
+                    </form>
+                </div>
+            }
         }
-    }
+
+        <!-- ↓↓↓ КНОПКИ ТЕПЕРЬ В САМОМ НИЗУ ↓↓↓ -->
+        <hr />
+        <div class="text-center mt-4">
+            <button type="submit" class="btn btn-primary px-4">
+                @(Model.Id.HasValue ? "Update" : "Create")
+            </button>
+            <a asp-action="Index" asp-controller="Kindergartens" class="btn btn-secondary px-4">
+                Back
+            </a>
+        </div>
+    </form>
 </div>

@@ -50,15 +50,29 @@ namespace JekShop.ApplicationServices.Services
 
             return result;
         }
-        public async Task <Kindergarten>Delete(Guid id)
+        public async Task<Kindergarten?> Delete(Guid id)
         {
-            var remove = await _context.Kindergartens
+            var kindergarten = await _context.Kindergartens
                 .FirstOrDefaultAsync(x => x.Id == id);
 
-            _context.Kindergartens.Remove(remove);
+            if (kindergarten == null)
+                return null;
+
+            // 1) Удаляем все картинки этого детсада
+            var images = await _context.FileToDatabases
+                .Where(f => f.KindergartenId == id)
+                .ToListAsync();
+
+            if (images.Count > 0)
+                _context.FileToDatabases.RemoveRange(images);
+
+            // 2) Удаляем сам детсад
+            _context.Kindergartens.Remove(kindergarten);
+
+            // 3) Сохраняем изменения
             await _context.SaveChangesAsync();
 
-            return remove;
+            return kindergarten;
         }
         public async Task<Kindergarten> Update(KindergartenDto dto)
         {
