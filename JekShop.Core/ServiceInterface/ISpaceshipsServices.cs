@@ -10,5 +10,9 @@ namespace JekShop.Core.ServiceInterface
         Task<Spaceship> DetailAsync(Guid id);
         Task<Spaceship> Delete(Guid id);
         Task<Spaceship> Update(SpaceshipDto dto);
+
+        Task<FileToDatabase> RemoveImageFromDatabase(FileToDatabaseDto dto);
+
+        Task<FileToDatabase> RemoveImagesFromDatabase(FileToDatabaseDto[] dtos);
     }
 }

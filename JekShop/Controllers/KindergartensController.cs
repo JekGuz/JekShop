@@ -7,9 +7,11 @@ using JekShop.Core.ServiceInterface;
 using JekShop.Data;
 using JekShop.Data.Migrations;
 using JekShop.Models.Kindergartens;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using JekShop.ApplicationServices.Services;
 
 namespace JekShop.Controllers
 {
@@ -17,14 +19,18 @@ namespace JekShop.Controllers
     {
         private readonly JekShopContext _context;
         private readonly IKindergartenServices _kindergartensServices;
+        private readonly IFileServices _fileServices;
+
         public KindergartensController
             (
                 JekShopContext context,
-                IKindergartenServices kindergatensServices
+                IKindergartenServices kindergatensServices,
+                IFileServices fileServices
             )
         {
             _context = context;
             _kindergartensServices = kindergatensServices;
+            _fileServices = fileServices;
         }
 
         public IActionResult Index()
@@ -119,6 +125,8 @@ namespace JekShop.Controllers
             {
                 return NotFound();
             }
+
+            KindergartenImageViewModel[] images = await FilesFromDatabase(id);
 
             var vm = new KindergartenDeleteViewModel
             {
@@ -245,7 +253,7 @@ namespace JekShop.Controllers
                 await _context.SaveChangesAsync();             // Сохраняем в БД
             }
 
-            // 5️⃣ Возвращаемся на список
+            // Возвращаемся на список
             return RedirectToAction(nameof(Index));
         }
 
@@ -292,5 +300,59 @@ namespace JekShop.Controllers
 
             return images;
         }
+
+        // Meetod piltide toomiseks andmebaasist
+        public async Task<KindergartenImageViewModel[]> FilesFromDatabase(Guid id)
+        {
+            var images = await _context.KindergartenFileToDatabase
+                .Where(x => x.KindergartenId == id)
+                .Select(y => new KindergartenImageViewModel
+                {
+                    KindergartenId = y.KindergartenId,
+                    Id = y.Id,
+                    ImageData = y.ImageData,
+                    ImageTitle = y.ImageTitle,
+                    Image = string.Format("data:image/gif;base64, {0}", Convert.ToBase64String(y.ImageData))
+                }).ToArrayAsync();
+
+            return images;
+        }
+
+        // Meetod piltide toomiseks andmebaasist
+        public async Task<KindergartenImageViewModel[]> FilesFromDatabase(Guid id)
+        {
+            var images = await _context.FileToDatabase
+                .Where(x => x.KindergartenId == id)
+                .Select(y => new KindergartenImageViewModel
+                {
+                    KindergartenId = y.KindergartenId,
+                    Id = y.Id,
+                    ImageData = y.ImageData,
+                    ImageTitle = y.ImageTitle,
+                    Image = string.Format("data:image/gif;base64, {0}", Convert.ToBase64String(y.ImageData))
+                }).ToArrayAsync();
+
+            return images;
+        }
+
+        // Meetod ühe pilte eemaldamiseks andmebaasist
+        [HttpPost]
+        public async Task<IActionResult> RemoveImage(KindergartenImageViewModel vm)
+        {
+            var dto = new FileToDatabaseDto()
+            {
+                Id = vm.Id
+            };
+
+            var image = await _fileServices.RemoveImageFromDatabase(dto);
+
+            if (image == null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
+
