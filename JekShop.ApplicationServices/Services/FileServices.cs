@@ -3,6 +3,7 @@ using JekShop.Core.Dto;
 using JekShop.Data;
 using Microsoft.Extensions.Hosting;
 using JekShop.Core.ServiceInterface;
+using Microsoft.EntityFrameworkCore;
 
 namespace JekShop.ApplicationServices.Services
 {
@@ -18,9 +19,7 @@ namespace JekShop.ApplicationServices.Services
             )
         {
             _context = context;
-            _webHost = webHost;
         }
-
         public void FilesToApi(SpaceshipDto dto, Spaceship spaceship)
         {
             if (dto.Files != null && dto.Files.Count > 0)
@@ -32,14 +31,12 @@ namespace JekShop.ApplicationServices.Services
 
                 foreach (var file in dto.Files)
                 {
-                    // muutuja string uploadFolder ja siina laetakse failid
-                    string uploadFolder = Path.Combine(_webHost.ContentRootPath, "multipleFileUpload");
-
+                    //muutuja string uploadsFolder ja sinna laetakse failid
+                    string uploadsFolder = Path.Combine(_webHost.ContentRootPath, "multipleFileUpload");
                     //muutuja string uniqueFileName ja siin genereeritakse uus Guid ja lisatakse see faili ette
-                    string uniqueFileName = Guid.NewGuid().ToString() + "_" + file.Name;
-
-                    // muutuja string filePath kombineeritakse ja lisatakse koos kausta unikaalse nimega
-                    string filePath = Path.Combine(uploadFolder, uniqueFileName);
+                    string uniqueFileName = Guid.NewGuid().ToString() + "_" + file.FileName;
+                    //muutuja string filePath kombineeritakse ja lisatakse koos kausta unikaalse nimega
+                    string filePath = Path.Combine(uploadsFolder, uniqueFileName);
 
                     using (var fileStream = new FileStream(filePath, FileMode.Create))
                     {
@@ -77,7 +74,7 @@ namespace JekShop.ApplicationServices.Services
                         file.CopyTo(target);
                         files.ImageData = target.ToArray();
 
-                        _context.FileToDatabase.Add(files);
+                        _context.FileToDatabases.Add(files);
                     }
                 }
             }
@@ -86,12 +83,12 @@ namespace JekShop.ApplicationServices.Services
         // Eemaldab ühe pildi andmebaasist
         public async Task<FileToDatabase> RemoveImageFromDatabase(FileToDatabaseDto dto)
         {
-            var imageId = await _context.FileToDatabase
+            var imageId = await _context.FileToDatabases
                 .FirstOrDefaultAsync(x => x.Id == dto.Id);
 
             if (imageId != null)
             {
-                _context.FileToDatabase.Remove(imageId);
+                _context.FileToDatabases.Remove(imageId);
                 await _context.SaveChangesAsync();
 
                 return imageId;
@@ -105,21 +102,16 @@ namespace JekShop.ApplicationServices.Services
         {
             foreach (var dto in dtos)
             {
-                var imageId = await _context.FileToDatabase
+                var imageId = await _context.FileToDatabases
                     .FirstOrDefaultAsync(x => x.Id == dto.Id);
 
                 if (imageId != null)
                 {
-                    _context.FileToDatabase.Remove(imageId);
+                    _context.FileToDatabases.Remove(imageId);
                     await _context.SaveChangesAsync();
                 }
             }
             return null;
-        }   
-    }
-}
-
-
-
+        }
     }
 }

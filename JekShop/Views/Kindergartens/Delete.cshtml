@@ -54,22 +54,14 @@
         </div>
     </dl>
 
-    <dl class="row">
-
-        <div>
-            @foreach (var image in Model.Images)
-            {
-                <partial name="_Images" model="image" />
-            }
-
-    </dl>
-
-   
-<form asp-action="DeleteConfirmation" method="post">
+    @foreach (var images in Model.Images)
+    {
+        <partial name="_Images" model="images" />
+        <br />
+    }
+    <form asp-action="DeleteConfirmation">
         <input type="hidden" asp-for="Id" />
-
-        <input type="submit" value="Delete" class="btn btn-danger" />
-
-        <a asp-action="Index" asp-controller="Kindergartens" class="btn btn-secondary">Back</a>
+        <input type="submit" value="Delete" class="btn btn-danger m-2" />
+        <a asp-action="Index" asp-controller="kindergartens" class="btn btn-secondary m-2">Back</a>
     </form>
 </div>

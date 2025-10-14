@@ -1,4 +1,5 @@
 ﻿@model JekShop.Models.Kindergartens.KindergartenCreateUpdateVeiwModel
+
 @if (Model.Id.HasValue)
 {
     <h1>Update</h1>
@@ -9,7 +10,13 @@ else
 }
 
 <div>
-    <form method="post" enctype="multipart/form-data">
+    <!-- Основная форма создания/обновления -->
+    <form asp-action="@(Model.Id.HasValue ? "Update" : "Create")"
+          asp-controller="Kindergartens"
+          method="post"
+          enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
+
         <input asp-for="Id" type="hidden" />
         <input asp-for="CreateAt" type="hidden" />
         <input asp-for="UpdateAt" type="hidden" />
@@ -51,25 +58,32 @@ else
             </div>
         </div>
 
+        <button type="submit" class="btn btn-primary">
+            @(Model.Id.HasValue ? "Update" : "Create")
+        </button>
+        <a asp-action="Index" asp-controller="Kindergartens" class="btn btn-secondary">Back</a>
+    </form>
+
+    <!-- Секция с уже загруженными изображениями + отдельные формы удаления -->
+    @if (Model.Images != null && Model.Images.Any())
+    {
+        <hr />
         @foreach (var images in Model.Images)
         {
-            <partial name="_Images" model="images" />
-            <input asp-action="removeImage" asp-controller="Kindergartens" asp-route-imageId="@images.Id" type="submit" class="btn btn-outline-danger" value="Remove Image" />
-            <br />
-            <br />
+            <div class="mb-3">
+                <partial name="_Images" model="images" />
+
+                <form asp-action="RemoveImage"
+                      asp-controller="Kindergartens"
+                      asp-route-imageId="@images.Id"
+                      method="post"
+                      class="d-inline">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-outline-danger">
+                        Remove Image
+                    </button>
+                </form>
+            </div>
         }
-
-@if (Model.Id.HasValue)
-{
-    <input asp-action="update" asp-controller="kindergartens" type="submit" class="btn btn-primary" value="update" />
-}
-else
-{
-    <input asp-action="create" asp-controller="kindergartens" type="submit" class="btn btn-primary" value="Create" />
-}
-<a asp-action="Index" asp-controller="kindergartens" class="btn btn-secondary">Back</a>
-
-
-    </form>
+    }
 </div>
-
