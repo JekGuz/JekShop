@@ -1,5 +1,6 @@
 ﻿using JekShop.Core.Dto;
 using JekShop.Core.ServiceInterface;
+using JekShop.Models.Weather;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JekShop.Controllers
@@ -21,10 +22,27 @@ namespace JekShop.Controllers
 
         //teha action SearchCity
         [HttpPost]
-        public async Task<IActionResult> SearchCity(AccuLocationWeatherResultDto dto)
+        public async Task<IActionResult> SearchCity(AccuWeatherSearchModel model)
         {
-            var result = await _WeatherForecastServices.AccuWeatherResult(dto);
-            return View("Index", result);
+            if(ModelState.IsValid)
+            {
+                return RedirectToAction("city", "weather", new { city = model.CityName });
+            }
+            return View(model);
+
+            //var result = await _WeatherForecastServices.AccuWeatherResult(dto);
+            //return View("Index", result);
         }
+        [HttpGet]
+        public IActionResult City(string city)
+        {
+            AccuLocationWeatherResultDto dto = new();
+            dto.CityName = city;
+
+
+            _WeatherForecastServices.AccuWeatherResult(dto);
+            return View();
+        }
+
     }
 }
