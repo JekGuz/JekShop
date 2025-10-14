@@ -58,31 +58,36 @@ else
             </div>
         </div>
 
-        <button type="submit" class="btn btn-primary">
-            @(Model.Id.HasValue ? "Update" : "Create")
-        </button>
-        <a asp-action="Index" asp-controller="Kindergartens" class="btn btn-secondary">Back</a>
     </form>
 
-    <!-- Секция с уже загруженными изображениями + отдельные формы удаления -->
+    <!-- ВНЕ основной формы — вставляется блок с изображениями -->
     @if (Model.Images != null && Model.Images.Any())
     {
         <hr />
         @foreach (var images in Model.Images)
         {
             <div class="mb-3">
+                <!-- Частичное представление с картинкой -->
                 <partial name="_Images" model="images" />
 
-                <form asp-action="RemoveImage"
-                      asp-controller="Kindergartens"
-                      asp-route-imageId="@images.Id"
-                      method="post"
-                      class="d-inline">
-                    @Html.AntiForgeryToken()
-                    <button type="submit" class="btn btn-outline-danger">
+                <!-- Отдельная форма для кнопки Remove Image -->
+                <form action="/Kindergartens/RemoveImage" method="post" class="d-inline">
+                    <input type="hidden" name="imageId" value="@images.Id" />
+                    <button type="submit" class="btn btn-outline-danger"
+                            formaction="/Kindergartens/RemoveImage" formmethod="post">
                         Remove Image
                     </button>
                 </form>
+                <br />
+                <br />
+                <form>
+                    <!-- кнопки создания/обновления -->
+                    <button type="submit" class="btn btn-primary">
+                        @(Model.Id.HasValue ? "Update" : "Create")
+                    </button>
+                    <a asp-action="Index" asp-controller="Kindergartens" class="btn btn-secondary">Back</a>
+                </form>
+
             </div>
         }
     }

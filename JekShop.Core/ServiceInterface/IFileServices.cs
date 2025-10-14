@@ -8,7 +8,6 @@ namespace JekShop.Core.ServiceInterface
         void FilesToApi(SpaceshipDto dto, Spaceship spaceship);
         void UploadFilesToDatabase(KindergartenDto dto, Kindergarten domain);
         Task<FileToDatabase> RemoveImageFromDatabase(FileToDatabaseDto dto);
-
         Task<FileToDatabase> RemoveImagesFromDatabase(FileToDatabaseDto[] dtos);
 
 

@@ -46,6 +46,11 @@ namespace JekShop
                 pattern: "{controller=Home}/{action=Index}/{id?}")
                 .WithStaticAssets();
 
+            app.MapControllerRoute(
+                name: "removeImage",
+                pattern: "Kindergartens/RemoveImage",
+                defaults: new { controller = "Kindergartens", action = "RemoveImage" });
+
             app.Run();
         }
     }

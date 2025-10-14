@@ -1,17 +1,11 @@
-﻿using System.IO; // напоминание: для MemoryStream/Path
-using System.Security.AccessControl;
-using JekShop.ApplicationServices.Services;
+﻿using System.IO;
 using JekShop.Core.Domain;
 using JekShop.Core.Dto;
 using JekShop.Core.ServiceInterface;
 using JekShop.Data;
-using JekShop.Data.Migrations;
 using JekShop.Models.Kindergartens;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
-using JekShop.ApplicationServices.Services;
 
 namespace JekShop.Controllers
 {
@@ -21,13 +15,10 @@ namespace JekShop.Controllers
         private readonly IKindergartenServices _kindergartenServices;
         private readonly IFileServices _fileServices;
 
-        public KindergartensController
-            (
-                JekShopContext context,
-                IKindergartenServices kindergartenServices,
-                IFileServices fileServices
-
-            )
+        public KindergartensController(
+            JekShopContext context,
+            IKindergartenServices kindergartenServices,
+            IFileServices fileServices)
         {
             _context = context;
             _kindergartenServices = kindergartenServices;
@@ -42,77 +33,99 @@ namespace JekShop.Controllers
                     Id = x.Id,
                     GroupName = x.GroupName,
                     ChildrenCount = x.ChildrenCount,
-                    TeacherName = x.TeacherName,
-                    KindergartenName = x.KindergartenName
+                    KindergartenName = x.KindergartenName,
+                    TeacherName = x.TeacherName
                 });
 
             return View(result);
         }
 
-        // Create
         [HttpGet]
         public IActionResult Create()
         {
-            ViewBag.Action = "Create";
-
             KindergartenCreateUpdateVeiwModel result = new();
-
             return View("CreateUpdate", result);
         }
+
         [HttpPost]
         public async Task<IActionResult> Create(KindergartenCreateUpdateVeiwModel vm)
         {
-            var dto = new KindergartenDto()
+            // подготовим изображения (необязательно, но пусть будет)
+            var imageDtos = new List<FileToDatabaseDto>();
+            if (vm.Files != null && vm.Files.Any())
+            {
+                foreach (var file in vm.Files)
+                {
+                    using var ms = new MemoryStream();
+                    await file.CopyToAsync(ms);
+                    imageDtos.Add(new FileToDatabaseDto
+                    {
+                        Id = Guid.NewGuid(),
+                        ImageTitle = Path.GetFileName(file.FileName),
+                        ImageData = ms.ToArray(),
+                        KindergartenId = vm.Id
+                    });
+                }
+            }
+
+            var dto = new KindergartenDto
             {
                 Id = vm.Id,
                 GroupName = vm.GroupName,
                 ChildrenCount = vm.ChildrenCount,
                 KindergartenName = vm.KindergartenName,
                 TeacherName = vm.TeacherName,
-                CreateAt = vm.CreateAt,
-                UpdateAt = vm.UpdateAt,
                 Files = vm.Files,
-                Image = vm.Images
-                    .Select(x => new FileToDatabaseDto
-                    {
-                        Id = x.Id,
-                        ImageData = x.ImageData,
-                        ImageTitle = x.ImageTitle,
-                        KindergartenId = x.KindergartenId,
-                    }).ToArray()
+                Image = imageDtos.ToArray(),
+                CreateAt = vm.CreateAt,
+                UpdateAt = vm.UpdateAt
             };
-            var result = await _kindergartenServices.Create(dto);
 
-            if (result == null)
+            var created = await _kindergartenServices.Create(dto);
+
+            // сразу сохраним реальные файлы в таблицу
+            if (created != null && vm.Files != null && vm.Files.Any())
             {
-                return RedirectToAction(nameof(Index));
+                var entities = new List<FileToDatabase>();
+                foreach (var file in vm.Files)
+                {
+                    using var ms = new MemoryStream();
+                    await file.CopyToAsync(ms);
+                    entities.Add(new FileToDatabase
+                    {
+                        Id = Guid.NewGuid(),
+                        KindergartenId = created.Id,
+                        ImageTitle = Path.GetFileName(file.FileName),
+                        ImageData = ms.ToArray()
+                    });
+                }
+                _context.FileToDatabases.AddRange(entities);
+                await _context.SaveChangesAsync();
             }
 
             return RedirectToAction(nameof(Index));
         }
 
-        //Update
         [HttpGet]
         public async Task<IActionResult> Update(Guid id)
         {
-            var kindergarten = await _kindergartenServices.DetailAsync(id);
+            var update = await _kindergartenServices.DetailAsync(id);
+            if (update == null) return NotFound();
 
-            if (kindergarten == null)
+            var images = await ShowImages(id);
+
+            var vm = new KindergartenCreateUpdateVeiwModel
             {
-                return NotFound();
-            }
+                Id = update.Id,
+                GroupName = update.GroupName,
+                ChildrenCount = update.ChildrenCount,
+                KindergartenName = update.KindergartenName,
+                TeacherName = update.TeacherName,
+                CreateAt = update.CreateAt,
+                UpdateAt = update.UpdateAt
+            };
 
-            KindergartenImageViewModel[] images = await FilesFromDatabase(id);
-
-            var vm = new KindergartenCreateUpdateVeiwModel();
-
-            vm.Id = kindergarten.Id;
-            vm.GroupName = kindergarten.GroupName;
-            vm.ChildrenCount = kindergarten.ChildrenCount;
-            vm.KindergartenName = kindergarten.KindergartenName;
-            vm.TeacherName = kindergarten.TeacherName;
-            vm.CreateAt = kindergarten.CreateAt;
-            vm.UpdateAt = kindergarten.UpdateAt;
+            vm.Images ??= new List<KindergartenImageViewModel>();
             vm.Images.AddRange(images);
 
             return View("CreateUpdate", vm);
@@ -121,7 +134,36 @@ namespace JekShop.Controllers
         [HttpPost]
         public async Task<IActionResult> Update(KindergartenCreateUpdateVeiwModel vm)
         {
-            var dto = new KindergartenDto()
+            var imageDtos = new List<FileToDatabaseDto>();
+
+            if (vm.Files != null && vm.Files.Any())
+            {
+                foreach (var file in vm.Files)
+                {
+                    using var ms = new MemoryStream();
+                    await file.CopyToAsync(ms);
+                    imageDtos.Add(new FileToDatabaseDto
+                    {
+                        Id = Guid.NewGuid(),
+                        ImageTitle = Path.GetFileName(file.FileName),
+                        ImageData = ms.ToArray(),
+                        KindergartenId = vm.Id
+                    });
+                }
+            }
+
+            if (vm.Images != null && vm.Images.Any())
+            {
+                imageDtos.AddRange(vm.Images.Select(x => new FileToDatabaseDto
+                {
+                    Id = x.Id,
+                    ImageTitle = x.ImageTitle,
+                    ImageData = x.ImageData,
+                    KindergartenId = x.KindergartenId
+                }));
+            }
+
+            var dto = new KindergartenDto
             {
                 Id = vm.Id,
                 GroupName = vm.GroupName,
@@ -131,49 +173,75 @@ namespace JekShop.Controllers
                 CreateAt = vm.CreateAt,
                 UpdateAt = vm.UpdateAt,
                 Files = vm.Files,
-                Image = vm.Images
-                    .Select(x => new FileToDatabaseDto
-                    {
-                        Id = x.Id,
-                        ImageData = x.ImageData,
-                        ImageTitle = x.ImageTitle,
-                        KindergartenId = x.KindergartenId
-                    }).ToArray()
+                Image = imageDtos.ToArray()
             };
 
-            var result = await _kindergartenServices.Update(dto);
+            var updated = await _kindergartenServices.Update(dto);
 
-            if (result == null)
+            // добавим новые файлы в БД
+            if (updated != null && vm.Files != null && vm.Files.Any())
             {
-                return RedirectToAction(nameof(Index));
+                var entities = new List<FileToDatabase>();
+                foreach (var file in vm.Files)
+                {
+                    using var ms = new MemoryStream();
+                    await file.CopyToAsync(ms);
+                    entities.Add(new FileToDatabase
+                    {
+                        Id = Guid.NewGuid(),
+                        KindergartenId = vm.Id,
+                        ImageTitle = Path.GetFileName(file.FileName),
+                        ImageData = ms.ToArray()
+                    });
+                }
+                _context.FileToDatabases.AddRange(entities);
+                await _context.SaveChangesAsync();
             }
 
-            return RedirectToAction(nameof(Index), vm);
+            return RedirectToAction(nameof(Index));
         }
 
-        // Delete
+        [HttpGet]
+        public async Task<IActionResult> Details(Guid id)
+        {
+            var kindergarten = await _kindergartenServices.DetailAsync(id);
+            if (kindergarten == null) return NotFound();
+
+            var photo = await ShowImages(id);
+
+            var vm = new KindergartenDeleteViewModel
+            {
+                Id = kindergarten.Id,
+                GroupName = kindergarten.GroupName,
+                ChildrenCount = kindergarten.ChildrenCount,
+                KindergartenName = kindergarten.KindergartenName,
+                TeacherName = kindergarten.TeacherName,
+                CreateAt = kindergarten.CreateAt,
+                UpdateAt = kindergarten.UpdateAt
+            };
+
+            vm.Images ??= new List<KindergartenImageViewModel>();
+            vm.Images.AddRange(photo);
+
+            return View(vm);
+        }
+
         [HttpGet]
         public async Task<IActionResult> Delete(Guid id)
         {
             var kindergarten = await _kindergartenServices.DetailAsync(id);
+            if (kindergarten == null) return NotFound();
 
-            if (kindergarten == null)
+            var vm = new KindergartenDeleteViewModel
             {
-                return NotFound();
-            }
-
-            KindergartenImageViewModel[] images = await FilesFromDatabase(id);
-
-            var vm = new KindergartenDeleteViewModel();
-
-            vm.Id = kindergarten.Id;
-            vm.GroupName = kindergarten.GroupName;
-            vm.ChildrenCount = kindergarten.ChildrenCount;
-            vm.KindergartenName = kindergarten.KindergartenName;
-            vm.TeacherName = kindergarten.TeacherName;
-            vm.CreateAt = kindergarten.CreateAt;
-            vm.UpdateAt = kindergarten.UpdateAt;
-            vm.Images.AddRange(images);
+                Id = kindergarten.Id,
+                GroupName = kindergarten.GroupName,
+                ChildrenCount = kindergarten.ChildrenCount,
+                KindergartenName = kindergarten.KindergartenName,
+                TeacherName = kindergarten.TeacherName,
+                CreateAt = kindergarten.CreateAt,
+                UpdateAt = kindergarten.UpdateAt
+            };
 
             return View(vm);
         }
@@ -181,42 +249,35 @@ namespace JekShop.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteConfirmation(Guid id)
         {
-            var kindergarten = await _kindergartenServices.Delete(id);
-            if (kindergarten != null)
-                return RedirectToAction(nameof(Index));
-
-            return NotFound();
+            var deleted = await _kindergartenServices.Delete(id);
+            if (deleted == null) return NotFound();
+            return RedirectToAction(nameof(Index));
         }
 
-        // Details
-        [HttpGet]
-        public async Task<IActionResult> Details(Guid id)
+        // жёстко фиксируем путь /Kindergartens/RemoveImage
+        [AcceptVerbs("GET", "POST")]
+        [Route("/Kindergartens/RemoveImage")]  // начальный слэш = абсолютный маршрут
+                                               // [ValidateAntiForgeryToken] // можно вернуть позже
+        public async Task<IActionResult> RemoveImage([FromForm] Guid imageId)
         {
-            var kindergarten = await _kindergartenServices.DetailAsync(id);
+            if (imageId == Guid.Empty)
+                return BadRequest("imageId is empty");
 
-            if (kindergarten == null)
-            {
-                return NotFound();
-            }
+            var image = await _fileServices.RemoveImageFromDatabase(
+                new JekShop.Core.Dto.FileToDatabaseDto { Id = imageId });
 
-            KindergartenImageViewModel[] images = await FilesFromDatabase(id);
+            if (image == null)
+                return NotFound($"Image {imageId} not found");
 
-            var vm = new KindergartenDetailsViewModel();
+            if (image.KindergartenId.HasValue)
+                return RedirectToAction(nameof(Update), new { id = image.KindergartenId.Value });
 
-            vm.Id = kindergarten.Id;
-            vm.GroupName = kindergarten.GroupName;
-            vm.ChildrenCount = kindergarten.ChildrenCount;
-            vm.KindergartenName = kindergarten.KindergartenName;
-            vm.TeacherName = kindergarten.TeacherName;
-            vm.CreateAt = kindergarten.CreateAt;
-            vm.UpdateAt = kindergarten.UpdateAt;
-            vm.Images.AddRange(images);
-
-            return View(vm);
+            return RedirectToAction(nameof(Index));
         }
 
-        // Meetod piltide toomiseks andmebaasist
-        public async Task<KindergartenImageViewModel[]> FilesFromDatabase(Guid id)
+
+        // загрузка изображений для отображения
+        public async Task<KindergartenImageViewModel[]> ShowImages(Guid id)
         {
             var images = await _context.FileToDatabases
                 .Where(x => x.KindergartenId == id)
@@ -226,30 +287,11 @@ namespace JekShop.Controllers
                     Id = y.Id,
                     ImageData = y.ImageData,
                     ImageTitle = y.ImageTitle,
-                    Image = string.Format("data:image/gif;base64, {0}", Convert.ToBase64String(y.ImageData))
-                }).ToArrayAsync();
+                    Image = $"data:image/jpeg;base64,{Convert.ToBase64String(y.ImageData)}"
+                })
+                .ToArrayAsync();
 
             return images;
         }
-
-        // Meetod ühe pilte eemaldamiseks andmebaasist
-        [HttpPost]
-        public async Task<IActionResult> RemoveImage(KindergartenImageViewModel vm)
-        {
-            var dto = new FileToDatabaseDto()
-            {
-                Id = vm.Id
-            };
-
-            var image = await _fileServices.RemoveImageFromDatabase(dto);
-
-            if (image == null)
-            {
-                return RedirectToAction(nameof(Index));
-            }
-
-            return RedirectToAction(nameof(Index));
-        }
     }
 }
-

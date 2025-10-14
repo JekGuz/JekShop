@@ -89,5 +89,15 @@ namespace JekShop.ApplicationServices.Services
 
             return domain;
         }
+
+        public Task<FileToDatabase> RemoveImageFromDatabase(FileToDatabaseDto dto)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<FileToDatabase> RemoveImagesFromDatabase(FileToDatabaseDto[] dtos)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

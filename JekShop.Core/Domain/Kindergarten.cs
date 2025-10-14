@@ -1,4 +1,6 @@
-﻿namespace JekShop.Core.Domain
+﻿using JekShop.Core.Dto;
+
+namespace JekShop.Core.Domain
 {
     public class Kindergarten
     {
@@ -7,6 +9,10 @@
         public int? ChildrenCount { get; set; }
         public string? KindergartenName { get; set; }
         public string? TeacherName{ get; set; }
+
+        public IEnumerable<FileToDatabaseDto> Images { get; set; }
+     = new List<FileToDatabaseDto>();
+
         public DateTime? CreateAt { get; set; }
         public DateTime? UpdateAt { get; set; }
 
