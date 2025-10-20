@@ -21,6 +21,7 @@ namespace JekShop
 
             builder.Services.AddScoped<IRealEstateServices, RealEstateServis>();
 
+            builder.Services.AddScoped<IWeatherForecastServices, WeatherForecastServices>();
 
 
             builder.Services.AddDbContext<JekShopContext>(options =>

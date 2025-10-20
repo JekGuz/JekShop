@@ -21,14 +21,21 @@ namespace JekShop.ApplicationServices.Services
                 if (response.IsSuccessStatusCode)
                 {
                    var jsonResponse = await response.Content.ReadAsStringAsync();
-                     var weatherData = JsonSerializer.Deserialize<AccuLocationWeatherResultDto>(jsonResponse);
-                     return weatherData;
+                     var weatherData = JsonSerializer.Deserialize<AccuLocationRootDto>(jsonResponse);
+                     //return weatherData;
+
+
+                    dto.EndDate = weatherData.Headline.EndDate;
+                    dto.Text = weatherData.Headline.Text;
+                    dto.TemoMectricValueUnit = weatherData.DailyForecasts[0].Temperature.Maximum.Value;
                 }
                 else
                 {
                     // Handle error response
                     throw new Exception("Error fetching weather data");
                 }
+
+                return dto;
             }
         }
 

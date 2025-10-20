@@ -41,7 +41,15 @@ namespace JekShop.Controllers
 
 
             _WeatherForecastServices.AccuWeatherResult(dto);
-            return View();
+
+            AccuWeatherViewModel vm = new();
+
+            vm.TemoMectricValueUnit = dto.TemoMectricValueUnit;
+            vm.Text = dto.Text;
+            vm.EndDate = dto.EndDate;
+
+
+            return View(vm);
         }
 
     }
