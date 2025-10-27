@@ -1,10 +1,7 @@
-﻿using JekShop.Core.Dto;
-using System.Threading.Tasks;
-
-namespace JekShop.Core.ServiceInterface
+﻿namespace JekShop.Core.ServiceInterface
 {
     public interface IChuckJokeService
     {
-        Task<ChuckJokeDto> GetRandomAsync();
+        Task<JekShop.Core.Dto.ChuckJokeDto> GetRandomAsync();
     }
 }

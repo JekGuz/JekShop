@@ -1,111 +1,120 @@
-﻿using System.Net;
+﻿using System.Net.Http.Headers;
 using System.Text.Json;
 using JekShop.Core.Dto;
 using JekShop.Core.Dto.WeatherWebClientDto;
 using JekShop.Core.ServiceInterface;
-using JekShop.Core.ServiceInterface;
-using Nancy.Json;
-
+using Microsoft.Extensions.Configuration;
 
 namespace JekShop.ApplicationServices.Services
 {
     public class WeatherForecastServices : IWeatherForecastServices
     {
+        private readonly string _accuApiKey;
 
-        public async Task<AccuLocationWeatherResultDto> AccuWeatherResult(AccuLocationWeatherResultDto dto)
+        private static readonly JsonSerializerOptions JsonOpts = new()
         {
-            //https://developer.accuweather.com/core-weather/text-search?lang=shell#city-search
+            PropertyNameCaseInsensitive = true
+        };
 
-            //string accuApiKey = "";
-            string baseUrl = "http://dataservice.accuweather.com/forecasts/v1/daily/1day/";
-
-            using (var httpClient = new HttpClient())
-            {
-                httpClient.BaseAddress = new Uri(baseUrl);
-                httpClient.DefaultRequestHeaders.Accept.Clear();
-                httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
-                //127964
-                var response = await httpClient.GetAsync($"{127964}?apikey={accuApiKey}&details=true");
-                if (response.IsSuccessStatusCode)
-                {
-                    var jsonResponse = await response.Content.ReadAsStringAsync();
-                    var weatherData = JsonSerializer.Deserialize<AccuLocationRootDto>(jsonResponse);
-                    //return weatherData;
-
-                    dto.EndDate = weatherData.Headline.EndDate;
-                    dto.Text = weatherData.Headline.Text;
-                    dto.TempMaxValue = weatherData.DailyForecasts[0].Temperature.Maximum.Value;
-                }
-                else
-                {
-                    // Handle error response
-                    throw new Exception("Error fetching weather data");
-                }
-
-                return dto;
-            }
+        public WeatherForecastServices(IConfiguration cfg)
+        {
+            // приоритет: appsettings.json -> переменная окружения -> исключение
+            _accuApiKey =
+                cfg["AccuWeather:ApiKey"]
+                ?? Environment.GetEnvironmentVariable("ACCUWEATHER_API_KEY")
+                ?? throw new InvalidOperationException("AccuWeather API key is missing. Put it into appsettings.json (AccuWeather:ApiKey) or set env ACCUWEATHER_API_KEY.");
         }
 
-
-        public async Task<AccuLocationWeatherResultDto> AccuWeatherResultWebClient(AccuLocationWeatherResultDto dto)
+        /// Короткий вариант (по фиксированному коду города)
+        public async Task<AccuLocationWeatherResultDto> AccuWeatherResult(AccuLocationWeatherResultDto dto)
         {
-            //string accuApiKey = "";
-            string url = $"http://dataservice.accuweather.com/locations/v1/cities/search?apikey={accuApiKey}&q={dto.CityName}";
+            const string baseUrl = "http://dataservice.accuweather.com/forecasts/v1/daily/1day/";
 
-            using (WebClient client = new WebClient())
+            using var httpClient = new HttpClient { BaseAddress = new Uri(baseUrl) };
+            httpClient.DefaultRequestHeaders.Accept.Clear();
+            httpClient.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue("application/json"));
+
+            // 127964 — пример: Таллин
+            var response = await httpClient.GetAsync($"127964?apikey={_accuApiKey}&details=true&metric=true");
+            response.EnsureSuccessStatusCode();
+
+            var json = await response.Content.ReadAsStringAsync();
+            var data = JsonSerializer.Deserialize<AccuLocationRootDto>(json, JsonOpts);
+
+            if (data?.Headline != null && data.DailyForecasts?.Length > 0)
             {
-                string json = client.DownloadString(url);
-                //127964
-                List<AccuLocationRootWebClientDto> accuResult = new JavaScriptSerializer()
-                    .Deserialize<List<AccuLocationRootWebClientDto>>(json);
-
-                dto.CityName = accuResult[0].LocalizedName;
-                dto.CityCode = accuResult[0].Key;
+                dto.EndDate = data.Headline.EndDate;
+                dto.Text = data.Headline.Text;
+                dto.TempMaxValue = data.DailyForecasts[0].Temperature?.Maximum?.Value;
             }
 
-            string urlWeather = $"https://dataservice.accuweather.com/forecasts/v1/daily/1day/{dto.CityCode}?apikey={accuApiKey}&metric=true";
+            return dto;
+        }
 
-            using (WebClient client = new WebClient())
+        /// Полный вариант через WebClient DTO (по имени города)
+        public async Task<AccuLocationWeatherResultDto> AccuWeatherResultWebClient(AccuLocationWeatherResultDto dto)
+        {
+            using var http = new HttpClient();
+
+            // 1) поиск города
+            var urlSearch =
+                $"http://dataservice.accuweather.com/locations/v1/cities/search?apikey={_accuApiKey}&q={Uri.EscapeDataString(dto.CityName ?? string.Empty)}";
+            var jsonSearch = await http.GetStringAsync(urlSearch);
+            var locations = JsonSerializer.Deserialize<List<AccuLocationRootWebClientDto>>(jsonSearch, JsonOpts);
+
+            if (locations == null || locations.Count == 0)
+                throw new Exception("City not found from AccuWeather.");
+
+            dto.CityName = locations[0].LocalizedName;
+            dto.CityCode = locations[0].Key;
+
+            // 2) прогноз на 1 день
+            var urlWeather =
+                $"https://dataservice.accuweather.com/forecasts/v1/daily/1day/{dto.CityCode}?apikey={_accuApiKey}&metric=true&details=true";
+            var jsonWeather = await http.GetStringAsync(urlWeather);
+            var weather = JsonSerializer.Deserialize<AccuWeatherRootWebClientDto>(jsonWeather, JsonOpts);
+
+            // headline
+            dto.EffectiveDate = weather?.Headline?.EffectiveDate;
+            dto.EffectiveEpochDate = weather?.Headline?.EffectiveEpochDate;
+            dto.Severity = weather?.Headline?.Severity;
+            dto.Text = weather?.Headline?.Text;
+            dto.Category = weather?.Headline?.Category;
+            dto.EndDate = weather?.Headline?.EndDate;
+            dto.EndEpochDate = weather?.Headline?.EndEpochDate;
+            dto.MobileLink = weather?.Headline?.MobileLink;
+            dto.Link = weather?.Headline?.Link;
+
+            // первый день прогноза
+            var d = weather?.DailyForecasts != null && weather.DailyForecasts.Count > 0
+                ? weather.DailyForecasts[0]
+                : null;
+
+            if (d != null)
             {
-                string json = client.DownloadString(urlWeather);
-                AccuWeatherRootWebClientDto weatherRootDto = new JavaScriptSerializer()
-                    .Deserialize<AccuWeatherRootWebClientDto>(json);
+                dto.DailyForecastsDate = d.Date;
+                dto.DailyForecastsEpochDate = d.EpochDate;
 
-                dto.EffectiveDate = weatherRootDto.Headline.EffectiveDate;
-                dto.EffectiveEpochDate = weatherRootDto.Headline.EffectiveEpochDate;
-                dto.Severity = weatherRootDto.Headline.Severity;
-                dto.Text = weatherRootDto.Headline.Text;
-                dto.Category = weatherRootDto.Headline.Category;
-                dto.EndDate = weatherRootDto.Headline.EndDate;
-                dto.EndEpochDate = weatherRootDto.Headline.EndEpochDate;
+                dto.TempMinValue = d.Temperature?.Minimum?.Value;
+                dto.TempMinUnit = d.Temperature?.Minimum?.Unit;
+                dto.TempMinUnitType = d.Temperature?.Minimum?.UnitType;
 
-                dto.MobileLink = weatherRootDto.Headline.MobileLink;
-                dto.Link = weatherRootDto.Headline.Link;
+                dto.TempMaxValue = d.Temperature?.Maximum?.Value;
+                dto.TempMaxUnit = d.Temperature?.Maximum?.Unit;
+                dto.TempMaxUnitType = d.Temperature?.Maximum?.UnitType;
 
-                //var dailyForecasts = weatherRootDto.DailyForecasts[0];
+                dto.DayIcon = d.Day?.Icon;
+                dto.DayIconPhrase = d.Day?.IconPhrase;
+                dto.DayHasPrecipitation = d.Day?.HasPrecipitation;
+                dto.DayPrecipitationType = d.Day?.PrecipitationType;
+                dto.DayPrecipitationIntensity = d.Day?.PrecipitationIntensity;
 
-                dto.DailyForecastsDate = weatherRootDto.DailyForecasts[0].Date;
-                dto.DailyForecastsEpochDate = weatherRootDto.DailyForecasts[0].EpochDate;
-
-                dto.TempMinValue = weatherRootDto.DailyForecasts[0].Temperature.Minimum.Value;
-                dto.TempMinUnit = weatherRootDto.DailyForecasts[0].Temperature.Minimum.Unit;
-                dto.TempMinUnitType = weatherRootDto.DailyForecasts[0].Temperature.Minimum.UnitType;
-
-                dto.TempMaxValue = weatherRootDto.DailyForecasts[0].Temperature.Maximum.Value;
-                dto.TempMaxUnit = weatherRootDto.DailyForecasts[0].Temperature.Maximum.Unit;
-                dto.TempMaxUnitType = weatherRootDto.DailyForecasts[0].Temperature.Maximum.UnitType;
-
-                dto.DayIcon = weatherRootDto.DailyForecasts[0].Day.Icon;
-                dto.DayIconPhrase = weatherRootDto.DailyForecasts[0].Day.IconPhrase;
-                dto.DayHasPrecipitation = weatherRootDto.DailyForecasts[0].Day.HasPrecipitation;
-                dto.DayPrecipitationType = weatherRootDto.DailyForecasts[0].Day.PrecipitationType;
-                dto.DayPrecipitationIntensity = weatherRootDto.DailyForecasts[0].Day.PrecipitationIntensity;
-
-                dto.NightIcon = weatherRootDto.DailyForecasts[0].Night.Icon;
-                dto.NightIconPhrase = weatherRootDto.DailyForecasts[0].Night.IconPhrase;
-                dto.NightHasPrecipitation = weatherRootDto.DailyForecasts[0].Night.HasPrecipitation;
-                dto.NightPrecipitationType = weatherRootDto.DailyForecasts[0].Night.PrecipitationType;
-                dto.NightPrecipitationIntensity = weatherRootDto.DailyForecasts[0].Night.PrecipitationIntensity;
+                dto.NightIcon = d.Night?.Icon;
+                dto.NightIconPhrase = d.Night?.IconPhrase;
+                dto.NightHasPrecipitation = d.Night?.HasPrecipitation;
+                dto.NightPrecipitationType = d.Night?.PrecipitationType;
+                dto.NightPrecipitationIntensity = d.Night?.PrecipitationIntensity;
             }
 
             return dto;

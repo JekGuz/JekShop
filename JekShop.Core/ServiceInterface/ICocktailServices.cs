@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using JekShop.Core.Dto;
 
 namespace JekShop.Core.ServiceInterface
 {
-    public class ICocktailServices
+    public interface ICocktailServices
     {
+        Task<CocktailDto.Rootobject?> SearchAsync(string name);
     }
 }

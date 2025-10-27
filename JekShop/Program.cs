@@ -21,9 +21,12 @@ namespace JekShop
 
             builder.Services.AddScoped<IRealEstateServices, RealEstateServis>();
 
+            builder.Services.AddHttpClient<WeatherForecastServices>();
             builder.Services.AddScoped<IWeatherForecastServices, WeatherForecastServices>();
 
-            builder.Services.AddHttpClient<IChuckJokeService, ChuckJokeService>();
+            builder.Services.AddScoped<IChuckJokeService, ChuckJokeService>();
+
+            builder.Services.AddHttpClient<ICocktailServices, CocktailService>();
 
 
             builder.Services.AddDbContext<JekShopContext>(options =>

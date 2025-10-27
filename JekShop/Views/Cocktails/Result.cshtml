@@ -1,0 +1,60 @@
+﻿@model List<JekShop.Models.Cocktail.CocktailViewModel>
+@{
+    ViewData["Title"] = "Results";
+}
+
+<a asp-action="Index" class="btn btn-secondary mb-3">← Back to search</a>
+
+@if (!string.IsNullOrEmpty(ViewBag.SearchTerm))
+{
+    <h1 class="mb-4">Search results for: <span class="text-primary">"@ViewBag.SearchTerm"</span></h1>
+}
+else
+{
+    <h1 class="mb-4">Search results</h1>
+}
+
+@if (Model == null || !Model.Any())
+{
+    <p>No cocktails found.</p>
+}
+else
+{
+    <div class="row row-cols-1 row-cols-md-3 g-3">
+        @foreach (var c in Model)
+        {
+            <div class="col">
+                <div class="card h-100">
+                    @if (!string.IsNullOrWhiteSpace(c.ThumbUrl))
+                    {
+                        <img src="@c.ThumbUrl" class="card-img-top" alt="@c.Name" />
+                    }
+                    <div class="card-body">
+                        <h5 class="card-title">@c.Name</h5>
+                        <p class="card-text mb-1"><strong>Category:</strong> @c.Category</p>
+                        <p class="card-text mb-1"><strong>Type:</strong> @c.Alcoholic</p>
+                        <p class="card-text mb-2"><strong>Glass:</strong> @c.Glass</p>
+
+                        @if (c.Ingredients?.Any() == true)
+                        {
+                            <p class="card-text mb-1"><strong>Ingredients:</strong></p>
+                            <ul class="mb-2">
+                                @foreach (var i in c.Ingredients)
+                                {
+                                    <li>@i</li>
+                                }
+                            </ul>
+                        }
+
+                        <details>
+                            <summary>Instructions</summary>
+                            <p class="mt-2">@c.Instructions</p>
+                        </details>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<a asp-action="Index" class="btn btn-secondary mt-3">← Back to search</a>
