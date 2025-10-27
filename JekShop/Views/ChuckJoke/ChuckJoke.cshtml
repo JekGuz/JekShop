@@ -1,0 +1,33 @@
+﻿@model JekShop.Models.ChuckJoke.ChuckJokeModel
+
+@{
+    ViewData["Title"] = "Chuck Norris Jokes";
+}
+
+<h2 class="mb-3">😂 Random Chuck Norris Joke</h2>
+
+<div class="card p-3 shadow-sm mt-3" style="max-width: 700px;">
+    <div class="d-flex align-items-center mb-2">
+        <img src="@Model.IconUrl" alt="icon" width="50" height="50" class="me-3 rounded-circle" />
+        <small class="text-muted">ID: @Model.Id</small>
+    </div>
+
+    <p class="fs-5">@Model.Value</p>
+
+    @if (!string.IsNullOrEmpty(Model.Url))
+    {
+        <a href="@Model.Url" target="_blank" rel="noopener" class="text-primary">View Original</a>
+    }
+
+    <form asp-action="NewJoke" method="post" class="mt-3">
+        <button type="submit" class="btn btn-warning w-100 py-2 fw-bold text-dark"
+                style="background-color: #F28907; border-color: #F28907;">
+            😂 Another One!
+        </button>
+    </form>
+
+    <a asp-action="Index" asp-controller="Home"
+       class="btn btn-danger w-100 mt-2 py-2 fw-bold">
+        Back
+    </a>
+</div>

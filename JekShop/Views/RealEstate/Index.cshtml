@@ -1,0 +1,45 @@
+﻿@model IEnumerable<JekShop.Models.RealEstate.RealEstateIndexModel>
+@{
+    int nr = 1;
+}
+
+<div class="text-center">
+    <h1 class="display-4">RealEstate table: </h1>
+</div>
+<div class="text-end">
+    <a asp-action="create" asp-controller="RealEstate" type="submit" class="btn btn-primary">Create</a>
+</div>
+<form action="/" method="post">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th scope="col">Nr</th>
+                <th scope="col">Area</th>
+                <th scope="col">Location</th>
+                <th scope="col">RoomNumber</th>
+                <th scope="col">BuildingType</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var RealEstate in Model)
+            {
+                <tr>
+                    <td>@nr. </td>
+                    <td>@RealEstate.Area</td>
+                    <td>@RealEstate.Location</td>
+                    <td>@RealEstate.RoomNumber</td>
+                    <td>@RealEstate.BuildingType</td>
+                    <td>
+                        <a asp-action="details" asp-controller="RealEstate" asp-route-id="@RealEstate.Id" class="btn btn-outline-primary">Details</a>
+                        <a asp-action="update" asp-controller="RealEstate" asp-route-id="@RealEstate.Id" class="btn btn-outline-warning">Update</a>
+                        <a asp-action="delete" asp-controller="RealEstate" asp-route-id="@RealEstate.Id" class="btn btn-outline-danger">Delete</a>
+                    </td>
+
+                </tr>
+                nr++;
+                //nr += 1;
+                //mark += "*";
+            }
+        </tbody>
+    </table>
+</form>
