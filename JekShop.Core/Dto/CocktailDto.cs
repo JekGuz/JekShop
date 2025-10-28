@@ -11,6 +11,7 @@ namespace JekShop.Core.Dto
 
         public class Rootobject
         {
+            // данные о коктейлях (массив)
             public Drink[]? drinks { get; set; }
         }
 

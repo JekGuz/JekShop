@@ -3,8 +3,10 @@
     ViewData["Title"] = "Results";
 }
 
+<!-- Кнопка: вернуться на форму поиска (Index) -->
 <a asp-action="Index" class="btn btn-secondary mb-3">← Back to search</a>
 
+<!-- Заголовок: если мы знаем, что именно искали — покажем запрос -->
 @if (!string.IsNullOrEmpty(ViewBag.SearchTerm))
 {
     <h1 class="mb-4">Search results for: <span class="text-primary">"@ViewBag.SearchTerm"</span></h1>
@@ -14,27 +16,33 @@ else
     <h1 class="mb-4">Search results</h1>
 }
 
+<!-- Если список пустой или равен null — дружелюбное сообщение -->
 @if (Model == null || !Model.Any())
 {
     <p>No cocktails found.</p>
 }
 else
 {
+    <!-- Сетка карточек -->
     <div class="row row-cols-1 row-cols-md-3 g-3">
-        @foreach (var c in Model)
+        <!-- ВАЖНО: перебираем ВСЕ найденные коктейли -->
+        @foreach (var c in Model)   
         {
             <div class="col">
                 <div class="card h-100">
+                    <!-- Превью-картинка (если ссылка не пустая) -->
                     @if (!string.IsNullOrWhiteSpace(c.ThumbUrl))
                     {
                         <img src="@c.ThumbUrl" class="card-img-top" alt="@c.Name" />
                     }
+
                     <div class="card-body">
                         <h5 class="card-title">@c.Name</h5>
                         <p class="card-text mb-1"><strong>Category:</strong> @c.Category</p>
                         <p class="card-text mb-1"><strong>Type:</strong> @c.Alcoholic</p>
                         <p class="card-text mb-2"><strong>Glass:</strong> @c.Glass</p>
 
+                        @* Список ингредиентов (если они есть) *@
                         @if (c.Ingredients?.Any() == true)
                         {
                             <p class="card-text mb-1"><strong>Ingredients:</strong></p>
@@ -46,6 +54,7 @@ else
                             </ul>
                         }
 
+                        <!-- Инструкции сворачиваются/разворачиваются -->
                         <details>
                             <summary>Instructions</summary>
                             <p class="mt-2">@c.Instructions</p>
@@ -57,4 +66,5 @@ else
     </div>
 }
 
+<!-- Дублируем кнопку "Назад" внизу длинной страницы -->
 <a asp-action="Index" class="btn btn-secondary mt-3">← Back to search</a>
