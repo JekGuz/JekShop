@@ -6,40 +6,33 @@ using Microsoft.Extensions.Configuration;
 
 namespace JekShop.ApplicationServices.Services
 {
-    public class OpenWeatherServices : IOpenWeatherServices
+    public class OpenWeatherService : IOpenWeatherService
     {
         private readonly string _apiKey;
         private readonly string _baseUrl;
         private readonly string _defaultUnits;
-        private readonly string _defaultLang;
 
         private static readonly JsonSerializerOptions JsonOpts = new()
         {
             PropertyNameCaseInsensitive = true
         };
 
-        public OpenWeatherServices(IConfiguration cfg)
+        public OpenWeatherService(IConfiguration cfg)
         {
-            // берём из appsettings.json
             _apiKey = cfg["OpenWeather:ApiKey"]
                       ?? Environment.GetEnvironmentVariable("OPENWEATHER_API_KEY")
-                      ?? throw new InvalidOperationException("OpenWeather API key is missing. Put it into appsettings.json (OpenWeather:ApiKey) or set env OPENWEATHER_API_KEY.");
-
+                      ?? throw new InvalidOperationException("OpenWeather API key is missing.");
             _baseUrl = cfg["OpenWeather:BaseUrl"] ?? "https://api.openweathermap.org/data/2.5";
             _defaultUnits = cfg["OpenWeather:DefaultUnits"] ?? "metric";
-            _defaultLang = cfg["OpenWeather:DefaultLang"] ?? "et";
         }
 
         public async Task<OpenWeatherDto.Rootobject?> GetCurrentByCityAsync(
-            string city, string? units = null, string? lang = null, CancellationToken ct = default)
+            string city, string? units = null, CancellationToken ct = default)
         {
             if (string.IsNullOrWhiteSpace(city)) return null;
 
-            var u = units ?? _defaultUnits;
-            var l = lang ?? _defaultLang;
-
-            // /weather?q=Tallinn&appid=KEY&units=metric&lang=et
-            var url = $"{_baseUrl}/weather?q={Uri.EscapeDataString(city)}&appid={_apiKey}&units={u}&lang={l}";
+            var u = units ?? _defaultUnits; // °C по умолчанию
+            var url = $"{_baseUrl}/weather?q={Uri.EscapeDataString(city)}&appid={_apiKey}&units={u}";
 
             using var http = new HttpClient();
             http.DefaultRequestHeaders.Accept.Clear();
