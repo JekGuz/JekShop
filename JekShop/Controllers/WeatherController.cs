@@ -1,8 +1,8 @@
-﻿using System.Threading.Tasks;
-using JekShop.Core.Dto;
+﻿using JekShop.Core.Dto;
 using JekShop.Core.ServiceInterface;
 using JekShop.Models.Weather;
 using Microsoft.AspNetCore.Mvc;
+
 
 namespace JekShop.Controllers
 {
@@ -10,68 +10,73 @@ namespace JekShop.Controllers
     {
         private readonly IWeatherForecastServices _weatherForecastServices;
 
-        public WeatherController(IWeatherForecastServices weatherForecastServices)
+        public WeatherController
+            (
+                IWeatherForecastServices weatherForecastServices
+            )
         {
             _weatherForecastServices = weatherForecastServices;
         }
 
-        [HttpGet]
-        public IActionResult Index() => View();
+        public IActionResult Index()
+        {
+            return View();
+        }
 
-        // teha action SearchCity
+        //teha action SearchCity
         [HttpPost]
         public IActionResult SearchCity(AccuWeatherSearchModel model)
         {
-            if (!ModelState.IsValid)
-                return View("Index", model);
+            if (ModelState.IsValid)
+            {
+                return RedirectToAction("City", "Weather", new { city = model.CityName });
+            }
 
-            return RedirectToAction(nameof(City), new { city = model.CityName });
+            return View(model);
         }
 
         [HttpGet]
-        public async Task<IActionResult> City(string city)
+        public IActionResult City(string city)
         {
-            var dto = new AccuLocationWeatherResultDto { CityName = city };
+            AccuLocationWeatherResultDto dto = new();
+            dto.CityName = city;
 
-            // ВАЖНО: ждём результат!
-            var result = await _weatherForecastServices.AccuWeatherResultWebClient(dto);
+            //_weatherForecastServices.AccuWeatherResult(dto);
+            _weatherForecastServices.AccuWeatherResultWebClient(dto);
+            AccuWeatherViewModel vm = new();
+            vm.CityName = dto.CityName;
+            vm.EffectiveDate = dto.EffectiveDate;
+            vm.EffectiveEpochDate = dto.EffectiveEpochDate;
+            vm.Severity = dto.Severity;
+            vm.Text = dto.Text;
+            vm.Category = dto.Category;
+            vm.EndDate = dto.EndDate;
+            vm.EndEpochDate = dto.EndEpochDate;
+            vm.DailyForecastsDate = dto.DailyForecastsDate;
+            vm.DailyForecastsEpochDate = dto.DailyForecastsEpochDate;
 
-            var vm = new AccuWeatherViewModel
-            {
-                CityName = result.CityName,
-                EffectiveDate = result.EffectiveDate,
-                EffectiveEpochDate = result.EffectiveEpochDate,
-                Severity = result.Severity,
-                Text = result.Text,
-                Category = result.Category,
-                EndDate = result.EndDate,
-                EndEpochDate = result.EndEpochDate,
-                DailyForecastsDate = result.DailyForecastsDate,
-                DailyForecastsEpochDate = result.DailyForecastsEpochDate,
+            vm.TempMinValue = dto.TempMinValue;
+            vm.TempMinUnit = dto.TempMinUnit;
+            vm.TempMinUnitType = dto.TempMinUnitType;
 
-                TempMinValue = result.TempMinValue,
-                TempMinUnit = result.TempMinUnit,
-                TempMinUnitType = result.TempMinUnitType,
+            vm.TempMaxValue = dto.TempMaxValue;
+            vm.TempMaxUnit = dto.TempMaxUnit;
+            vm.TempMaxUnitType = dto.TempMaxUnitType;
 
-                TempMaxValue = result.TempMaxValue,
-                TempMaxUnit = result.TempMaxUnit,
-                TempMaxUnitType = result.TempMaxUnitType,
+            vm.DayIcon = dto.DayIcon;
+            vm.DayIconPhrase = dto.DayIconPhrase;
+            vm.DayHasPrecipitation = dto.DayHasPrecipitation;
+            vm.DayPrecipitationType = dto.DayPrecipitationType;
+            vm.DayPrecipitationIntensity = dto.DayPrecipitationIntensity;
 
-                DayIcon = result.DayIcon,
-                DayIconPhrase = result.DayIconPhrase,
-                DayHasPrecipitation = result.DayHasPrecipitation,
-                DayPrecipitationType = result.DayPrecipitationType,
-                DayPrecipitationIntensity = result.DayPrecipitationIntensity,
+            vm.NightIcon = dto.NightIcon;
+            vm.NightIconPhrase = dto.NightIconPhrase;
+            vm.NightHasPrecipitation = dto.NightHasPrecipitation;
+            vm.NightPrecipitationType = dto.NightPrecipitationType;
+            vm.NightPrecipitationIntensity = dto.NightPrecipitationIntensity;
 
-                NightIcon = result.NightIcon,
-                NightIconPhrase = result.NightIconPhrase,
-                NightHasPrecipitation = result.NightHasPrecipitation,
-                NightPrecipitationType = result.NightPrecipitationType,
-                NightPrecipitationIntensity = result.NightPrecipitationIntensity,
-
-                MobileLink = result.MobileLink,
-                Link = result.Link
-            };
+            vm.MobileLink = dto.MobileLink;
+            vm.Link = dto.Link;
 
             return View(vm);
         }

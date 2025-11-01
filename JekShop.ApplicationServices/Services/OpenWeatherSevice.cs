@@ -1,5 +1,6 @@
 ﻿using System.Net.Http.Headers;
 using System.Text.Json;
+using System.Text.Json.Serialization; // добавоено для использования
 using JekShop.Core.Dto;
 using JekShop.Core.ServiceInterface;
 using Microsoft.Extensions.Configuration;
@@ -12,9 +13,11 @@ namespace JekShop.ApplicationServices.Services
         private readonly string _baseUrl;
         private readonly string _defaultUnits;
 
+        // ✅ обновлённые настройки десериализации
         private static readonly JsonSerializerOptions JsonOpts = new()
         {
-            PropertyNameCaseInsensitive = true
+            PropertyNameCaseInsensitive = true,
+            NumberHandling = JsonNumberHandling.AllowReadingFromString // разрешаем числа в виде строк
         };
 
         public OpenWeatherService(IConfiguration cfg)
@@ -39,7 +42,11 @@ namespace JekShop.ApplicationServices.Services
             http.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
             var resp = await http.GetAsync(url, ct);
-            resp.EnsureSuccessStatusCode();
+            if (!resp.IsSuccessStatusCode)
+            {
+                // можно залогировать ошибку, чтобы не падало при плохом ответе
+                return null;
+            }
 
             var json = await resp.Content.ReadAsStringAsync(ct);
             return JsonSerializer.Deserialize<OpenWeatherDto.Rootobject>(json, JsonOpts);
