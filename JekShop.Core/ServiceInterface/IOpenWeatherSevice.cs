@@ -10,5 +10,7 @@ namespace JekShop.Core.ServiceInterface
             string city,
             string? units = null,           // metric | imperial
             CancellationToken ct = default);
+        Task<OpenWeatherForecastDto?> GetForecastByCityAsync(string city, string? units = null, CancellationToken ct = default);
+
     }
 }

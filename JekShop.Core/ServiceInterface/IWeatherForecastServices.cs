@@ -11,5 +11,7 @@ namespace JekShop.Core.ServiceInterface
     {
         Task<AccuLocationWeatherResultDto> AccuWeatherResult(AccuLocationWeatherResultDto dto);
         Task<AccuLocationWeatherResultDto> AccuWeatherResultWebClient(AccuLocationWeatherResultDto dto);
+
+
     }
 }
