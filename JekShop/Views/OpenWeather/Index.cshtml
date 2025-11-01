@@ -1,0 +1,30 @@
+﻿@model JekShop.Models.OpenWeather.OpenWeatherViewModel
+
+<h1>Search City</h1>
+
+<div class="container">
+    @if (TempData["ow_error"] is string err && !string.IsNullOrWhiteSpace(err))
+    {
+        <div class="alert alert-warning mt-3">@err</div>
+    }
+
+    <form asp-controller="OpenWeather" asp-action="SearchCity" method="post" class="row g-2">
+        <div class="col-auto">
+            <label asp-for="City" class="form-label">City</label>
+            <input asp-for="City" class="form-control" placeholder="Tallinn" />
+            <span asp-validation-for="City" class="text-danger"></span>
+        </div>
+
+        <div class="col-auto">
+            <label class="form-label">Units</label>
+            <select name="units" class="form-select">
+                <option value="metric" selected>metric (°C)</option>
+                <option value="imperial">imperial (°F)</option>
+            </select>
+        </div>
+
+        <div class="col-auto align-self-end">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+    </form>
+</div>
