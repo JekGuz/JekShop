@@ -49,5 +49,16 @@ namespace JekShop.ApplicationServices.Services
             var json = await resp.Content.ReadAsStringAsync(ct);
             return JsonSerializer.Deserialize<OpenWeatherDto.Rootobject>(json, JsonOpts);
         }
+    public async Task<OpenWeatherForecastDto?> GetForecastByCityAsync(
+    string city, string? units = null, CancellationToken ct = default)
+        {
+            if (string.IsNullOrWhiteSpace(city)) return null;
+            var u = units ?? _defaultUnits;
+            var url = $"{_baseUrl}/forecast?q={Uri.EscapeDataString(city)}&appid={_apiKey}&units={u}";
+            var resp = await _http.GetAsync(url, ct);
+            if (!resp.IsSuccessStatusCode) return null;
+            var json = await resp.Content.ReadAsStringAsync(ct);
+            return JsonSerializer.Deserialize<OpenWeatherForecastDto>(json, JsonOpts);
+        }
     }
 }
