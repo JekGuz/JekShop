@@ -14,12 +14,11 @@ else
 {
     <div class="container">
         <h2>Forecast for the selected city</h2>
-        <h2>
-            @Model.City @(!string.IsNullOrEmpty(Model.Country) ? $"({Model.Country})" : "")
-        </h2>
+        <h2>@Model.City @(!string.IsNullOrEmpty(Model.Country) ? $"({Model.Country})" : "")</h2>
         <hr />
 
-        <div class="card shadow-sm" style="max-width: 560px;">
+        <!-- текущее состояние -->
+        <div class="card shadow-sm mb-4" style="max-width: 560px;">
             <div class="card-body d-flex align-items-center">
                 @if (!string.IsNullOrWhiteSpace(Model.IconUrl))
                 {
@@ -37,5 +36,32 @@ else
                 </div>
             </div>
         </div>
+
+        <!-- прогноз на 1/3 дня -->
+        @if (Model.Days?.Any() == true)
+        {
+            <h3 class="mb-3">Forecast (@Model.Days.Count @(Model.Days.Count == 1 ? "day" : "days"))</h3>
+            <div class="row row-cols-1 row-cols-md-3 g-3">
+                @foreach (var d in Model.Days)
+                {
+                    <div class="col">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">@d.Date.ToString("dd MMM")</h5>
+                                @if (!string.IsNullOrWhiteSpace(d.IconUrl))
+                                {
+                                    <img src="@d.IconUrl" alt="icon" />
+                                }
+                                <p class="card-text mt-2">
+                                    @d.Description<br />
+                                    <strong>Min:</strong> @d.Min?.ToString("0.#")@unitSign<br />
+                                    <strong>Max:</strong> @d.Max?.ToString("0.#")@unitSign
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
     </div>
 }

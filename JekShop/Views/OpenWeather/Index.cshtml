@@ -14,7 +14,7 @@
 
         <div class="col-auto">
             <label asp-for="City" class="form-label">City</label>
-            <input asp-for="City" class="form-control" placeholder="Linn" />
+            <input asp-for="City" class="form-control" placeholder="Tallinn" />
             <span asp-validation-for="City" class="text-danger"></span>
         </div>
 
@@ -23,6 +23,14 @@
             <select name="units" class="form-select">
                 <option value="metric" selected>metric (°C)</option>
                 <option value="imperial">imperial (°F)</option>
+            </select>
+        </div>
+
+        <div class="col-auto">
+            <label class="form-label">Days</label>
+            <select name="days" class="form-select">
+                <option value="1" selected>1 day</option>
+                <option value="3">3 days</option>
             </select>
         </div>
 
