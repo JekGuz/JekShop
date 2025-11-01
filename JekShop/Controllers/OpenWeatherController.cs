@@ -10,39 +10,34 @@ namespace JekShop.Controllers
     {
         private readonly IOpenWeatherService _svc;
 
-        public OpenWeatherController(IOpenWeatherService svc)
-        {
-            _svc = svc;
-        }
+        public OpenWeatherController(IOpenWeatherService svc) => _svc = svc;
 
-        // Стартовая страница с формой
+        // стартовая страница с формой
         [HttpGet]
-        public IActionResult Index()
-        {
-            return View();
-        }
+        public IActionResult Index() => View();
 
-        // Пост с формы -> редирект с параметрами
+        // пост с формы -> редирект на результат
         [HttpPost]
         public IActionResult SearchCity(string city, string units = "metric")
         {
             if (string.IsNullOrWhiteSpace(city))
             {
-                ModelState.AddModelError(string.Empty, "Введите название города");
-                return View("Index");
+                TempData["ow_error"] = "Введите название города.";
+                return RedirectToAction(nameof(Index));
             }
 
             return RedirectToAction(nameof(City), new { city, units });
         }
 
-        // Страница результата
+        // страница результата
         [HttpGet]
         public async Task<IActionResult> City(string city, string units = "metric")
         {
             var dto = await _svc.GetCurrentByCityAsync(city, units);
             if (dto == null)
             {
-                return View("Index");
+                TempData["ow_error"] = "City not found or API error.";
+                return RedirectToAction(nameof(Index));
             }
 
             var w = dto.weather?.FirstOrDefault();
