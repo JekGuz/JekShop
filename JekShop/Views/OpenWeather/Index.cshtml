@@ -9,6 +9,9 @@
     }
 
     <form asp-controller="OpenWeather" asp-action="SearchCity" method="post" class="row g-2">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
         <div class="col-auto">
             <label asp-for="City" class="form-label">City</label>
             <input asp-for="City" class="form-control" placeholder="Tallinn" />

@@ -14,29 +14,28 @@ else
 {
     <div class="container">
         <h2>Forecast for the selected city</h2>
-        <h2>@Model.City @if(!string.IsNullOrEmpty(Model.Country)){
-        <span>(@Model.Country)</span>
-    }
-</h2>
-    <hr />
+        <h2>
+            @Model.City @(!string.IsNullOrEmpty(Model.Country) ? $"({Model.Country})" : "")
+        </h2>
+        <hr />
 
-    <div class="card shadow-sm" style="max-width: 560px;">
-        <div class="card-body d-flex align-items-center">
-            @if (!string.IsNullOrWhiteSpace(Model.IconUrl))
-            {
-                <img src="@Model.IconUrl" alt="icon" class="me-3" />
-            }
-            <div>
-                <div class="fs-3 mb-1">
-                    @Model.Temp?.ToString("0.#")@unitSign — @Model.Description
-                </div>
-                <div class="text-muted">
-                    Feels like: @Model.FeelsLike?.ToString("0.#")@unitSign<br />
-                    Humidity: @Model.Humidity%<br />
-                    Wind: @Model.WindSpeed m/s
+        <div class="card shadow-sm" style="max-width: 560px;">
+            <div class="card-body d-flex align-items-center">
+                @if (!string.IsNullOrWhiteSpace(Model.IconUrl))
+                {
+                    <img src="@Model.IconUrl" alt="icon" class="me-3" />
+                }
+                <div>
+                    <div class="fs-3 mb-1">
+                        @Model.Temp?.ToString("0.#")@unitSign — @Model.Description
+                    </div>
+                    <div class="text-muted">
+                        Feels like: @Model.FeelsLike?.ToString("0.#")@unitSign<br />
+                        Humidity: @Model.Humidity%<br />
+                        Wind: @Model.WindSpeed m/s
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 }
