@@ -1,11 +1,21 @@
-﻿@* Legacy AccuWeather page — not used *@
-@{
-    ViewData["Title"] = "AccuWeather (legacy)";
-}
+﻿@model JekShop.Models.Weather.AccuWeatherSearchModel
+
+<h1>Search City</h1>
 
 <div class="container">
-    <div class="alert alert-info mt-3">
-        This page is deprecated. Please use
-        <a asp-controller="OpenWeather" asp-action="Index">OpenWeather</a>.
-    </div>
+    <form method="post">
+        <div class="container">
+            <div class="form-group col-md-offset-3 col-md-5">
+                <h2>Searh the forecast in a city</h2>
+                <label asp-for="CityName" style="font-family: Arial"></label>
+                <input asp-for="CityName" class="form-control" />
+                <span asp-validation-for="CityName" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="container">
+            <div class="form-group col-md-offset-3 col-md-5" style="margin-top:10px">
+                <button asp-controller="Weather" asp-action="searchCity" class="btn btn-primary">Search</button>
+            </div>
+        </div>
+    </form>
 </div>

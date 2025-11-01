@@ -28,7 +28,7 @@ namespace JekShop
 
             builder.Services.AddHttpClient<ICocktailServices, CocktailService>();
 
-            builder.Services.AddScoped<IOpenWeatherService, OpenWeatherService>();
+            builder.Services.AddHttpClient<IOpenWeatherService, OpenWeatherService>();
 
 
             builder.Services.AddDbContext<JekShopContext>(options =>

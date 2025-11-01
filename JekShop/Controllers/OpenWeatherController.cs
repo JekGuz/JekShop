@@ -12,24 +12,24 @@ namespace JekShop.Controllers
 
         public OpenWeatherController(IOpenWeatherService svc) => _svc = svc;
 
-        // стартовая страница с формой
         [HttpGet]
         public IActionResult Index() => View();
 
-        // пост с формы -> редирект на результат
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult SearchCity(string city, string units = "metric")
         {
+            city = city?.Trim();
             if (string.IsNullOrWhiteSpace(city))
             {
                 TempData["ow_error"] = "Введите название города.";
                 return RedirectToAction(nameof(Index));
             }
 
+            units = (units == "imperial") ? "imperial" : "metric";
             return RedirectToAction(nameof(City), new { city, units });
         }
 
-        // страница результата
         [HttpGet]
         public async Task<IActionResult> City(string city, string units = "metric")
         {
