@@ -112,7 +112,7 @@ public class RealEstateTest : TestBase
     }
 
     //ShouldNot_DeleteByIdRealestate_WhenDidNotDeleteRealEsrare()
-    // что удаление одной записи не влияет на другие
+    // Что нужно добавить запись и удалить по не существующими Id
     [Fact]
     public async Task ShouldNot_DeleteByIdRealestate_WhenDidNotDeleteRealEsrare()
     {
@@ -129,28 +129,27 @@ public class RealEstateTest : TestBase
             ModifiedAt = DateTime.Now
         };
 
-        RealEstateDto dto2 = new()
-        {
-            Area = 140,
-            Location = "Suburbs",
-            RoomNumber = 4,
-            BuildingType = "House",
-            CreateAt = DateTime.Now,
-            ModifiedAt = DateTime.Now
-        };
-
         var created1 = await service.Create(dto1);
-        var created2 = await service.Create(dto2);
 
-        // Act – удаляем только первую запись
-        await service.Delete((Guid)created1.Id);
+        // Act – пробуем удалить по НЕсуществующему Id
+        var fakeId = Guid.NewGuid(); // такого Id нет в базе
 
-        // и проверяем, что вторая всё ещё существует
-        var secondFromDb = await service.DetailAsync((Guid)created2.Id);
+        try
+        {
+            await service.Delete(fakeId);
+        }
+        catch (ArgumentNullException)
+        {
+            // Это ожидаемое поведение текущей реализации Delete,
+            // просто игнорируем исключение в рамках теста.
+        }
 
-        // Assert – вторая запись не удалена
-        Assert.NotNull(secondFromDb);
-        Assert.Equal(created2.Id, secondFromDb.Id);
+        // Assert – наша настоящая запись всё ещё существует
+        var fromDb = await service.DetailAsync((Guid)created1.Id);
+
+        Assert.NotNull(fromDb);
+        Assert.Equal(created1.Id, fromDb.Id);
+
     }
 
     }
