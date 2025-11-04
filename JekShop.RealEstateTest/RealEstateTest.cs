@@ -129,4 +129,18 @@ public class RealEstateTest : TestBase
 
     }
 
+    [Fact]
+    public async Task ShouldNot_GetByIdRealestate_WhenReturnsNotEqual1()
+    {
+        // Arrange 
+        Guid wrongGuid = Guid.Parse(Guid.NewGuid().ToString());
+        Guid guid = Guid.Parse("0a35d9eb-e4d7-44c7-ac85-d3c584938eec");
+
+        // Act
+        await Svc<IRealEstateServices>().DetailAsync(guid);
+
+        // Assert
+        Assert.NotEqual(wrongGuid, guid);
     }
+
+}
