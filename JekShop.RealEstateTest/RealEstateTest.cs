@@ -7,18 +7,25 @@ using JekShop.Core.ServiceInterface;
 
 public class RealEstateTest : TestBase
     {
-        [Fact]
+
+    public static RealEstateDto RealEstatedto1()
+    {
+        return new()
+        {
+            Area = 80,
+            Location = "Center",
+            RoomNumber = 2,
+            BuildingType = "Apartment",
+            CreateAt = DateTime.Now,
+            ModifiedAt = DateTime.Now
+        };
+    }
+
+    [Fact]
         public async Task ShoulNot_AddEmptyRealEstate_WhenReturnResult()
         {
-            // Arrange 
-            RealEstateDto dto = new();
-
-        dto.Area = 120.5;
-        dto.Location = "Downtown";
-        dto.RoomNumber = 3;
-        dto.BuildingType = "Apartament";
-        dto.CreateAt = DateTime.Now;
-        dto.ModifiedAt = DateTime.Now;
+        // Arrange 
+        RealEstateDto dto = RealEstatedto1();
 
         // Act 
         var result = await Svc<IRealEstateServices>().Create(dto);
@@ -34,15 +41,7 @@ public class RealEstateTest : TestBase
         // Arrange – создаём две разные записи недвижимости
         var service = Svc<IRealEstateServices>();
 
-        RealEstateDto dto1 = new()
-        {
-            Area = 80,
-            Location = "Center",
-            RoomNumber = 2,
-            BuildingType = "Apartment",
-            CreateAt = DateTime.Now,
-            ModifiedAt = DateTime.Now
-        };
+        RealEstateDto dto1 = RealEstatedto1();
 
         var created1 = await service.Create(dto1);
 
@@ -53,6 +52,7 @@ public class RealEstateTest : TestBase
         Assert.NotNull(result);
     }
 
+
     //Should_GetByIdRealestate_WhenReturnsEqal()
     // что при чтении по Id мы получаем именно ту же запись (Id совпадает).
     [Fact]
@@ -61,15 +61,8 @@ public class RealEstateTest : TestBase
         // Arrange – создаём одну запись и запоминаем её Id
         var service = Svc<IRealEstateServices>();
 
-        RealEstateDto dto = new()
-        {
-            Area = 120.5,
-            Location = "Downtown",
-            RoomNumber = 3,
-            BuildingType = "Apartment",
-            CreateAt = DateTime.Now,
-            ModifiedAt = DateTime.Now
-        };
+        RealEstateDto dto = RealEstatedto1();
+
 
         var created = await service.Create(dto);
 
@@ -89,15 +82,7 @@ public class RealEstateTest : TestBase
         // Arrange – создаём запись, чтобы потом её удалить
         var service = Svc<IRealEstateServices>();
 
-        RealEstateDto dto = new()
-        {
-            Area = 95,
-            Location = "OldTown",
-            RoomNumber = 2,
-            BuildingType = "Apartment",
-            CreateAt = DateTime.Now,
-            ModifiedAt = DateTime.Now
-        };
+        RealEstateDto dto = RealEstatedto1();
 
         var created = await service.Create(dto);
 
@@ -119,15 +104,7 @@ public class RealEstateTest : TestBase
         // Arrange – создаём две записи
         var service = Svc<IRealEstateServices>();
 
-        RealEstateDto dto1 = new()
-        {
-            Area = 60,
-            Location = "Center",
-            RoomNumber = 1,
-            BuildingType = "Studio",
-            CreateAt = DateTime.Now,
-            ModifiedAt = DateTime.Now
-        };
+        RealEstateDto dto1 = RealEstatedto1();
 
         var created1 = await service.Create(dto1);
 
