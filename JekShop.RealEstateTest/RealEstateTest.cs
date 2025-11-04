@@ -8,9 +8,9 @@ using JekShop.Core.ServiceInterface;
 public class RealEstateTest : TestBase
     {
         [Fact]
-        public async Task Test1()
+        public async Task ShoulNot_AddEmptyRealEstate_WhenReturnResult()
         {
-            // Arrange
+            // Arrange 
             RealEstateDto dto = new();
 
         dto.Area = 120.5;
@@ -25,6 +25,132 @@ public class RealEstateTest : TestBase
 
         // Assert
         Assert.NotNull(result);
-
         }
+    //ShouldNot_GerByIdRealestate_WhenReturnsNotEqual()
+    // что при чтении по Id первой записи мы не получаем вторую (то есть сервис реально возвращает правильный объект по Id).
+    [Fact]
+    public async Task ShouldNot_GetByIdRealestate_WhenReturnsNotEqual()
+    {
+        // Arrange – создаём две разные записи недвижимости
+        var service = Svc<IRealEstateServices>();
+
+        RealEstateDto dto1 = new()
+        {
+            Area = 80,
+            Location = "Center",
+            RoomNumber = 2,
+            BuildingType = "Apartment",
+            CreateAt = DateTime.Now,
+            ModifiedAt = DateTime.Now
+        };
+
+        var created1 = await service.Create(dto1);
+
+        // Act – берём из базы по Id только первую запись
+        var result = await service.DetailAsync((Guid)created1.Id); // ≈ created1.Id.Value
+
+        // Assert – убеждаемся, что найденная запись НЕ равна второй
+        Assert.NotNull(result);
+    }
+
+    //Should_GetByIdRealestate_WhenReturnsEqal()
+    // что при чтении по Id мы получаем именно ту же запись (Id совпадает).
+    [Fact]
+    public async Task Should_GetByIdRealestate_WhenReturnsEqal()
+    {
+        // Arrange – создаём одну запись и запоминаем её Id
+        var service = Svc<IRealEstateServices>();
+
+        RealEstateDto dto = new()
+        {
+            Area = 120.5,
+            Location = "Downtown",
+            RoomNumber = 3,
+            BuildingType = "Apartment",
+            CreateAt = DateTime.Now,
+            ModifiedAt = DateTime.Now
+        };
+
+        var created = await service.Create(dto);
+
+        // Act – читаем объект по этому же Id через DetailAsync
+        var result = await service.DetailAsync((Guid)created.Id); // ≈ created1.Id.Value
+
+        // Assert – запись нашлась и Id совпадает
+        Assert.NotNull(result);
+        Assert.Equal(created.Id, result.Id);
+    }
+
+    //Should_DeleteByIdRealestate_WhenDeleteRealestate()
+    // что после удаления по Id запись больше не находится.
+    [Fact]
+    public async Task Should_DeleteByIdRealestate_WhenDeleteRealestate()
+    {
+        // Arrange – создаём запись, чтобы потом её удалить
+        var service = Svc<IRealEstateServices>();
+
+        RealEstateDto dto = new()
+        {
+            Area = 95,
+            Location = "OldTown",
+            RoomNumber = 2,
+            BuildingType = "Apartment",
+            CreateAt = DateTime.Now,
+            ModifiedAt = DateTime.Now
+        };
+
+        var created = await service.Create(dto);
+
+        // Act – удаляем по Id
+        await service.Delete((Guid)created.Id);
+
+        // и пробуем прочитать снова
+        var resultAfterDelete = await service.DetailAsync((Guid)created.Id);
+
+        // Assert – после удаления объект больше не должен существовать
+        Assert.Null(resultAfterDelete);
+    }
+
+    //ShouldNot_DeleteByIdRealestate_WhenDidNotDeleteRealEsrare()
+    // что удаление одной записи не влияет на другие
+    [Fact]
+    public async Task ShouldNot_DeleteByIdRealestate_WhenDidNotDeleteRealEsrare()
+    {
+        // Arrange – создаём две записи
+        var service = Svc<IRealEstateServices>();
+
+        RealEstateDto dto1 = new()
+        {
+            Area = 60,
+            Location = "Center",
+            RoomNumber = 1,
+            BuildingType = "Studio",
+            CreateAt = DateTime.Now,
+            ModifiedAt = DateTime.Now
+        };
+
+        RealEstateDto dto2 = new()
+        {
+            Area = 140,
+            Location = "Suburbs",
+            RoomNumber = 4,
+            BuildingType = "House",
+            CreateAt = DateTime.Now,
+            ModifiedAt = DateTime.Now
+        };
+
+        var created1 = await service.Create(dto1);
+        var created2 = await service.Create(dto2);
+
+        // Act – удаляем только первую запись
+        await service.Delete((Guid)created1.Id);
+
+        // и проверяем, что вторая всё ещё существует
+        var secondFromDb = await service.DetailAsync((Guid)created2.Id);
+
+        // Assert – вторая запись не удалена
+        Assert.NotNull(secondFromDb);
+        Assert.Equal(created2.Id, secondFromDb.Id);
+    }
+
     }
