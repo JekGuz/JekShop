@@ -80,5 +80,26 @@ namespace JekShop.ApplicationServices.Services
 
             return domain;
         }
+
+
+        //public async Task<RealEstate> Update1(RealEstateDto dto)
+        //{
+        //    // Находим сущность в базе по Id
+        //    var domain = await _context.RealEstates
+        //        .FirstOrDefaultAsync(x => x.Id == dto.Id);
+
+        //    // Обновляем поля
+        //    domain.Area = dto.Area;
+        //    domain.Location = dto.Location;
+        //    domain.RoomNumber = dto.RoomNumber;
+        //    domain.BuildingType = dto.BuildingType;
+        //    domain.CreateAt = dto.CreateAt;
+        //    domain.ModifiedAt = DateTime.Now;
+
+        //    // Сохраняем изменения
+        //    await _context.SaveChangesAsync();
+
+        //    return domain;
+        //}
     }
 }
