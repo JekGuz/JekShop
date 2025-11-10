@@ -281,6 +281,40 @@ public class RealEstateTest : TestBase
         Assert.NotEqual(createdRealEstate.ModifiedAt, result.ModifiedAt);
     }
 
-    // teha 
+    // teha test nimega ShouldNot_UpdateRealEstate_WhenDidNotUpdateDate()
+    [Fact]
+    public async Task ShouldNot_UpdateRealEstate_WhenDidNotUpdateDate()
+    {
+        // Arrange – создаём исходный DTO через RealEstatedto1()
+        RealEstateDto dto = RealEstatedto1();
+
+        // сохраняем запись в базу
+        var created1 = await Svc<IRealEstateServices>().Create(dto);
+
+        // Сохраняем исходные даты, чтобы потом сравнить
+        var create1 = created1.CreateAt;
+        var update = created1.ModifiedAt;
+
+        // Act – имитируем "фейковую кнопку": Update НЕ вызываем
+        var fake = await Svc<IRealEstateServices>().DetailAsync((Guid)created1.Id);
+
+        // Assert – проверяем, что НИЧЕГО не изменилось
+
+        // объект существует
+        Assert.NotNull(fake);
+
+        // Id тот же
+        Assert.Equal(created1.Id, fake.Id);
+
+        // данные такие же, как были в dto / created
+        Assert.Equal(dto.Area, fake.Area);
+        Assert.Equal(dto.Location, fake.Location);
+        Assert.Equal(dto.RoomNumber, fake.RoomNumber);
+        Assert.Equal(dto.BuildingType, fake.BuildingType);
+
+        // самое главное: даты не изменились, потому что Update не вызывался
+        Assert.Equal(create1, fake.CreateAt);   // тут было update
+        Assert.Equal(update, fake.ModifiedAt); // это правильно
+    }
 
 }
