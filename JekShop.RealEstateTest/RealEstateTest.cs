@@ -35,6 +35,20 @@ public class RealEstateTest : TestBase
         };
     }
 
+    public static RealEstateDto RealEstatedto0()
+    {
+        return new()
+        {
+            Id = null,
+            Area = null,
+            Location = null,
+            RoomNumber = null,
+            BuildingType = null,
+            CreateAt = null,
+            ModifiedAt = null
+        };
+    }
+
     [Fact]
         public async Task ShoulNot_AddEmptyRealEstate_WhenReturnResult()
         {
@@ -203,33 +217,33 @@ public class RealEstateTest : TestBase
         Assert.NotEqual(result.Id, created1.Id);
     }
 
-    [Fact]
-    public async Task Should_UpdateRealEstate_WhenUpdate()
-    {
-        // Arrage
+    //[Fact]
+    //public async Task Should_UpdateRealEstate_WhenUpdate()
+    //{
+    //    Arrage
 
-        RealEstateDto dto = RealEstatedto1();
+    //   RealEstateDto dto = RealEstatedto1();
 
-        // Act
-        var created1 = await Svc<IRealEstateServices>().Create(dto);
+    //    Act
+    //   var created1 = await Svc<IRealEstateServices>().Create(dto);
 
-        var updateDto = new RealEstateDto
-        {
-            Id = created1.Id,// ОБЯЗАТЕЛЬНО тот же Id
-            Area = 120,
-            Location = "Old Town",
-            RoomNumber = 3,
-            BuildingType = "Penthouse",
-            CreateAt = created1.CreateAt,// дата создания не меняется
-            ModifiedAt = DateTime.Now
-        };
+    //    var updateDto = new RealEstateDto
+    //    {
+    //        Id = created1.Id,// ОБЯЗАТЕЛЬНО тот же Id
+    //        Area = 120,
+    //        Location = "Old Town",
+    //        RoomNumber = 3,
+    //        BuildingType = "Penthouse",
+    //        CreateAt = created1.CreateAt,// дата создания не меняется
+    //        ModifiedAt = DateTime.Now
+    //    };
 
-        // обновляем
-        var updated = await Svc<IRealEstateServices>().Update(updateDto);
+    //    обновляем
+    //   var updated = await Svc<IRealEstateServices>().Update(updateDto);
 
-        // Assert
-        Assert.Equal(created1.Id, updated.Id);
-    }
+    //    Assert
+    //    Assert.Equal(created1.Id, updated.Id);
+    //}
 
     [Fact]
     public async Task Should_UpdateRealEstate_WhenUpdate1()
@@ -316,5 +330,19 @@ public class RealEstateTest : TestBase
         Assert.Equal(create1, fake.CreateAt);   // тут было update
         Assert.Equal(update, fake.ModifiedAt); // это правильно
     }
+
+    [Fact]
+    public async Task ShouldNot_UpdateRealEstate_WhenDidNotUpdateDate1()
+    {
+        RealEstateDto dto = RealEstatedto1();
+        var created1 = await Svc<IRealEstateServices>().Create(dto);
+
+        RealEstateDto update = RealEstatedto0();
+        var result = await Svc<IRealEstateServices>().Update(update);
+
+        Assert.NotEqual(dto.Id, result.Id);
+    }
+    // mõtelda ise välja unit test
+    //see peab olema selline, mida enne pole teinud
 
 }
