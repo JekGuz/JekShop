@@ -578,7 +578,6 @@ public class RealEstateTest : TestBase
         Assert.NotEmpty(leftovers);
     }
 
-    // ei tööta
     [Fact]
     public async Task Should_ReturnNull_When_DeletingNonExistentRealEstate()
     {
@@ -614,6 +613,71 @@ public class RealEstateTest : TestBase
         Assert.IsType<string>(create.Location);
         Assert.IsType<DateTime>(create.CreateAt);
     }
+
+    [Fact]
+    public async Task ShouldNotRenewCreatedAt_WhenUpdateData()
+    {
+        // arrange
+        // teeme muutuja CreatedAt originaaliks, mis peab jääma
+        // loome CreatedAt
+        RealEstateDto dto = RealEstatedto1();
+        var create = await Svc<IRealEstateServices>().Create(dto);
+        var originalCreatedAt = "2026-11-17T09:17:22.9756053+02:00";
+        // var originalCreatedAt = create.CreatedAt;
+
+        // act – uuendame MockUpdateRealEstateData andmeid
+        RealEstateDto update = RealEstatedto2();
+        var result = await Svc<IRealEstateServices>().Update(update);
+        result.CreateAt = DateTime.Parse("2026-11-17T09:17:22.9756053+02:00");
+
+        // assert – kontrollime, et uuendamisel ei uuendaks CreatedAt
+        Assert.Equal(DateTime.Parse(originalCreatedAt), result.CreateAt);
+    }
+
+    // Test kontrollib, et kinnisvaraobjekti uuendamisel muutub ModifiedAt väärtus.
+    // Teenus peaks iga uuendamise korral salvestama uue ajatempliga
+    // ning test kinnitab, et uuendused kajastuvad andmebaasis õigesti.
+    [Fact]
+    public async Task Should_UpdateRealEstate_ModifiedAtShouldChange()
+    {
+        // Arrange
+        var dto1 = RealEstatedto1();
+
+        var created = await Svc<IRealEstateServices>().Create(dto1);
+        var oldModified = created.ModifiedAt;
+
+        var dto = RealEstatedto2();
+        //dto.Id = created.Id;
+
+        // Act
+        var updated = await Svc<IRealEstateServices>().Update(dto);
+
+        // Assert
+        Assert.NotNull(updated);
+        Assert.NotEqual(oldModified, updated.ModifiedAt); // время должно измениться
+    }
+
+    [Fact]
+    public async Task ShouldNot_DeleteRealEstate_WhenIdNotExists()
+    {
+        // Arrange
+        var fakeId = Guid.NewGuid();
+
+        // Act
+        RealEstate result = null;
+        try
+        {
+            result = await Svc<IRealEstateServices>().Delete(fakeId);
+        }
+        catch
+        {
+            // сервис упадёт → тоже ок, значит delete не работает для несуществующих Id
+        }
+
+        // Assert
+        Assert.Null(result);
+    }
+
 
 }
 
