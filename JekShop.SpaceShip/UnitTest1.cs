@@ -24,9 +24,7 @@ namespace JekShop.SpaceShipTest
 
         public virtual void SetupServices(IServiceCollection services)
         {
-            // DI: сервис космических кораблей
-            // !!! ЕСЛИ у тебя класс называется иначе (например, SpaceshipServices),
-            // поменяй второй тип в этой строке.
+
             services.AddScoped<ISpaceshipsServices, SpaceshipsServices>();
 
             // Файловый сервис (если он реально нужен твоей реализацией)

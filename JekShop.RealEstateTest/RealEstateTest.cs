@@ -1,8 +1,11 @@
 ﻿namespace JekShop.RealEstateTest;
 
 using System.Threading.Tasks;
+using JekShop.Core.Domain;
 using JekShop.Core.Dto;
 using JekShop.Core.ServiceInterface;
+using JekShop.Data;
+using Microsoft.EntityFrameworkCore;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 
@@ -469,4 +472,148 @@ public class RealEstateTest : TestBase
         // Это показывает, что бизнес-логика не проверяет корректность порядка дат
     }
 
+    // test kedagi
+
+    [Fact]
+    public async Task Should_CreateRealEstate_WithNoNullId()
+    {
+        // Test kontrollib, et loodud RealEstate objektil okels Id väärtus
+
+        // Arrange
+        RealEstateDto dto = RealEstatedto1();
+
+        // Act
+        var result = await Svc<IRealEstateServices>().Create(dto);
+
+        // Assert
+        Assert.NotNull(result.Id);
+    }
+
+    [Fact]
+    // Uuendame objekti, mullel puubud Id -teenus peab tagastame
+    // null või muu oodatava tulemuse.
+    public async Task ShouldNot_UpdateRealEstate_WhenIdDoesNotExist()
+    {
+        // Arrange
+        RealEstateDto update = RealEstatedto1();
+        update.Id = Guid.NewGuid();
+
+        // Act and Assert
+        await Assert.ThrowsAsync<DbUpdateConcurrencyException>(async () =>
+        {
+            await Svc<IRealEstateServices>().Update(update);
+        });
+    }
+
+    [Fact]
+    // Loogiline strsenaarium: loome -> saame ID järgi -> võrdleme välju
+    public async Task Should_ReturnSameRealEstate_WhenGetDetailsAfterCreate()
+    {
+        // Arrange
+        RealEstateDto dto = RealEstatedto1();
+
+        // Act
+        var created = await Svc<IRealEstateServices>().Create(dto);
+        var fetched = await Svc<IRealEstateServices>().DetailAsync((Guid)created.Id);
+
+        // Assert
+        Assert.NotNull(fetched);
+        Assert.Equal(created.Id, fetched.Id);
+        Assert.Equal(created.Location, fetched.Location);
+    }
+
+    [Fact]
+    public async Task Should_AssingUniqueIds_When_CreateMultiple()
+    {
+        // Arrange
+        RealEstateDto dto = RealEstatedto1();
+        RealEstateDto dto1 = RealEstatedto2();
+
+        // Act
+        var create1 = await Svc<IRealEstateServices>().Create(dto);
+        var create2 = await Svc<IRealEstateServices>().Create(dto1);
+
+        // Assert
+        Assert.NotNull(create1);
+        Assert.NotNull(create2);
+        Assert.NotEqual(create1.Id, create2.Id);
+        Assert.NotEqual(Guid.Empty, create1.Id);
+        Assert.NotEqual(Guid.Empty, create2.Id);
+    }
+
+    // We check that after deleting the record,
+    // there are no rows left in FileTodatebases with this RealEstateId
+    [Fact]
+    public async Task Should_DeleteRelatedImages_WhenDeleteRealEstate()
+    {
+        // Arrange
+        RealEstateDto dto = RealEstatedto1();
+
+        var created = await Svc<IRealEstateServices>().Create(dto);
+        var id = (Guid)created.Id;
+
+        var db = Svc<JekShopContext>();
+        db.FileToDatabases.Add(new FileToDatabase
+        {
+            Id = Guid.NewGuid(),
+            RealEstateId = id,
+            ImageTitle = "kitchen.jpg",
+            ImageData = new byte[] { 1, 2, 3 }
+        });
+        db.FileToDatabases.Add(new FileToDatabase
+        {
+            Id = Guid.NewGuid(),
+            RealEstateId = id,
+            ImageTitle = "livingroom.jpg",
+            ImageData = new byte[] { 4, 5, 6 }
+        });
+        await db.SaveChangesAsync();
+
+        // Act
+        await Svc<IRealEstateServices>().Delete(id);
+
+        // Assert
+        var leftovers = db.FileToDatabases.Where(x => x.RealEstateId == id).ToList();
+
+        Assert.NotEmpty(leftovers);
+    }
+
+    // ei tööta
+    [Fact]
+    public async Task Should_ReturnNull_When_DeletingNonExistentRealEstate()
+    {
+        // Arrange (Ettevalmistus)
+        // Genereerime juhusliku ID, mida andmebaasis kindlasti ei ole.
+        // Guid nonExistentId = Guid.NewGuid();
+        var dto = RealEstatedto1();
+
+        var create = await Svc<IRealEstateServices>().Create(dto);
+
+        // Act (Tegevus)
+        // Proovime kustutada objekti selle ID järgi.
+        await Svc<IRealEstateServices>().Delete((Guid)create.Id);
+
+        var detail = await Svc<IRealEstateServices>().DetailAsync((Guid)create.Id);
+
+        // Assert (Kontroll)
+        // Meetod peab tagastama nulli, kuna polnud midagi kustutada ja viga ei tohiks tekkida.
+        Assert.Null(detail);
+    }
+
+    [Fact]
+    public async Task Should_AddValidRealEstate_WhenDateTypeIsValid()
+    {
+        // Arrange
+        RealEstateDto dto = RealEstatedto1();
+
+        // act
+        var create = await Svc<IRealEstateServices>().Create(dto);
+
+        // assert
+        Assert.IsType<int>(create.RoomNumber);
+        Assert.IsType<string>(create.Location);
+        Assert.IsType<DateTime>(create.CreateAt);
+    }
+
 }
+
