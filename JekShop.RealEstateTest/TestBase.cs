@@ -38,6 +38,7 @@ namespace JekShop.RealEstateTest
         {
             //
             services.AddScoped<IRealEstateServices, RealEstateServis>();
+            
 
 
             //services.AddScoped<IFileServices, FakeFileServices>();

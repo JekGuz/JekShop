@@ -13,6 +13,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JekShop.Core", "..\JekShop.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JekShop.RealEstateTest", "..\JekShop.RealEstateTest\JekShop.RealEstateTest.csproj", "{8D8D7AF3-772C-46CE-AEA3-EC63A04DAB12}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JekShop.SpaceShipTest", "..\JekShop.SpaceShip\JekShop.SpaceShipTest.csproj", "{B4AC7631-B45D-46CD-BEBD-F63863378EE5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{234591EA-51D2-4D88-B657-FC81107DFDC8} = {234591EA-51D2-4D88-B657-FC81107DFDC8}
+		{4FD7D090-9873-441E-9F32-4ADB743921DE} = {4FD7D090-9873-441E-9F32-4ADB743921DE}
+		{56684BA6-CDC2-44D1-B18D-1EE919A7E4D3} = {56684BA6-CDC2-44D1-B18D-1EE919A7E4D3}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +46,10 @@ Global
 		{8D8D7AF3-772C-46CE-AEA3-EC63A04DAB12}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8D8D7AF3-772C-46CE-AEA3-EC63A04DAB12}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8D8D7AF3-772C-46CE-AEA3-EC63A04DAB12}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4AC7631-B45D-46CD-BEBD-F63863378EE5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4AC7631-B45D-46CD-BEBD-F63863378EE5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4AC7631-B45D-46CD-BEBD-F63863378EE5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4AC7631-B45D-46CD-BEBD-F63863378EE5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
