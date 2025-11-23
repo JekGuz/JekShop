@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36414.22 d17.14
+VisualStudioVersion = 17.14.36414.22
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JekShop", "JekShop.csproj", "{E9019359-9E11-4047-BAF7-5B09D4F6B8C6}"
 EndProject
@@ -10,6 +10,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JekShop.Data", "..\JekShop.Data\JekShop.Data.csproj", "{4FD7D090-9873-441E-9F32-4ADB743921DE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JekShop.Core", "..\JekShop.Core\JekShop.Core.csproj", "{234591EA-51D2-4D88-B657-FC81107DFDC8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KindergartenTest", "..\KindergartenTest\KindergartenTest.csproj", "{210B731D-AD71-4847-A9BA-46C6A52296DC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{234591EA-51D2-4D88-B657-FC81107DFDC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{234591EA-51D2-4D88-B657-FC81107DFDC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{234591EA-51D2-4D88-B657-FC81107DFDC8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{210B731D-AD71-4847-A9BA-46C6A52296DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{210B731D-AD71-4847-A9BA-46C6A52296DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{210B731D-AD71-4847-A9BA-46C6A52296DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{210B731D-AD71-4847-A9BA-46C6A52296DC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
