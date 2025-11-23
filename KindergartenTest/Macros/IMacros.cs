@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace KindergartenTest.Macros
 {
-    internal class IMacros
+    public class IMacros
     {
     }
 }
