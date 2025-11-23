@@ -19,6 +19,11 @@ public sealed class FakeFileServices : IFileServices
         return Task.FromResult<FileToApi?>(null);
     }
 
+    public Task<FileToDatabase> RemoveImageFromDatabase(FileToDatabaseDto[] dtos)
+    {
+        throw new NotImplementedException();
+    }
+
     public Task<List<FileToApi>> RemoveImagesFromAppi(FileToApiDto[] dtos)
     {
         // Пустой список – нам результат не важен
@@ -29,4 +34,5 @@ public sealed class FakeFileServices : IFileServices
     {
         // В тесте не загружаем файлы
     }
+
 }

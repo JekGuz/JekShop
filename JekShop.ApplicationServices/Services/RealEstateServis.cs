@@ -55,13 +55,23 @@ namespace JekShop.ApplicationServices.Services
         }
         public async Task<RealEstate> Delete(Guid id)
         {
-            var remove = await _context.RealEstates
+            var result = await _context.RealEstates
                 .FirstOrDefaultAsync(x => x.Id == id);
 
-            _context.RealEstates.Remove(remove);
+            var images = await _context.FileToDatabases
+                .Where(x => x.RealEstateId == result.Id)
+                .Select(x => new FileToDatabaseDto
+                {
+                    Id = x.Id,
+                    ImageTitle = x.ImageTitle,
+                    RealEstateId = x.RealEstateId
+                }).ToArrayAsync();
+
+            await _fileServices.RemoveImageFromDatabase(images);
+            _context.RealEstates.Remove(result);
             await _context.SaveChangesAsync();
 
-            return remove;
+            return result;
         }
         public async Task<RealEstate> Update(RealEstateDto dto)
         {

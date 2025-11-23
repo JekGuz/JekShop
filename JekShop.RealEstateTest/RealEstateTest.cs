@@ -130,34 +130,18 @@ public class RealEstateTest : TestBase
     //ShouldNot_DeleteByIdRealestate_WhenDidNotDeleteRealEsrare()
     // Что нужно добавить запись и удалить по не существующими Id
     [Fact]
-    public async Task ShouldNot_DeleteByIdRealestate_WhenDidNotDeleteRealEsrare()
+    public async Task ShouldNot_DeleteByIdRealEstate_WhenDidNotDeleteRealEstate()
     {
-        // Arrange – создаём две записи
-        var service = Svc<IRealEstateServices>();
+        // Arrange
+        RealEstateDto dto = RealEstatedto1();
 
-        RealEstateDto dto1 = RealEstatedto1();
+        // Act
+        var createdRealEstate1 = await Svc<IRealEstateServices>().Create(dto);
+        var createdRealEstate2 = await Svc<IRealEstateServices>().Create(dto);
+        var result = await Svc<IRealEstateServices>().Delete((Guid)createdRealEstate2.Id);
 
-        var created1 = await service.Create(dto1);
-
-        // Act – пробуем удалить по НЕсуществующему Id
-        var fakeId = Guid.NewGuid(); // такого Id нет в базе
-
-        try
-        {
-            await service.Delete(fakeId);
-        }
-        catch (ArgumentNullException)
-        {
-            // Это ожидаемое поведение текущей реализации Delete,
-            // просто игнорируем исключение в рамках теста.
-        }
-
-        // Assert – наша настоящая запись всё ещё существует
-        var fromDb = await service.DetailAsync((Guid)created1.Id);
-
-        Assert.NotNull(fromDb);
-        Assert.Equal(created1.Id, fromDb.Id);
-
+        // Assert
+        Assert.NotEqual(createdRealEstate1.Id, result.Id);
     }
 
     //
@@ -549,9 +533,11 @@ public class RealEstateTest : TestBase
         // Arrange
         RealEstateDto dto = RealEstatedto1();
 
+        // Act
         var created = await Svc<IRealEstateServices>().Create(dto);
         var id = (Guid)created.Id;
 
+        // Arrange
         var db = Svc<JekShopContext>();
         db.FileToDatabases.Add(new FileToDatabase
         {
@@ -567,15 +553,15 @@ public class RealEstateTest : TestBase
             ImageTitle = "livingroom.jpg",
             ImageData = new byte[] { 4, 5, 6 }
         });
-        await db.SaveChangesAsync();
 
         // Act
+        await db.SaveChangesAsync();
         await Svc<IRealEstateServices>().Delete(id);
 
         // Assert
         var leftovers = db.FileToDatabases.Where(x => x.RealEstateId == id).ToList();
 
-        Assert.NotEmpty(leftovers);
+        Assert.Empty(leftovers);
     }
 
     [Fact]

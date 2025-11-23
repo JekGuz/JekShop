@@ -9,6 +9,7 @@ namespace JekShop.Core.ServiceInterface
         Task<FileToApi?> RemoveImageFromApi(FileToApiDto dto);
         Task<List<FileToApi>> RemoveImagesFromAppi(FileToApiDto[] dtos);
         void UploadFilesToDatabase(RealEstateDto dto, RealEstate domain);
+        Task<FileToDatabase> RemoveImageFromDatabase(FileToDatabaseDto[] dtos);
 
     }
 }
