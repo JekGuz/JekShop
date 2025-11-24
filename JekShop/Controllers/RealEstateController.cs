@@ -50,6 +50,12 @@ namespace JekShop.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(RealEstateCreateUpdateVeiwModel vm)
         {
+            if (!ModelState.IsValid)
+            {
+                // просто вернуть ту же форму с ошибками
+                return View("CreateUpdate", vm);
+            }
+
             var dto = new RealEstateDto()
             {
                 Id = vm.Id,
@@ -148,6 +154,12 @@ namespace JekShop.Controllers
         [HttpPost]
         public async Task<IActionResult> Update(RealEstateCreateUpdateVeiwModel vm)
         {
+            if (!ModelState.IsValid)
+            {
+                // 
+                return View("CreateUpdate", vm);
+            }
+
             var dto = new RealEstateDto()
             {
                 Id = vm.Id,
