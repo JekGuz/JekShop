@@ -5,6 +5,7 @@ using JekShop.Core.Dto;
 using JekShop.Core.ServiceInterface;
 using JekShop.Data;
 using JekShop.Data.Migrations;
+using JekShop.Models;
 using JekShop.Models.RealEstate;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -88,7 +89,7 @@ namespace JekShop.Controllers
 
             if (RealEstate == null)
             {
-                return NotFound();
+                return RealEstateNotFound(id);
             }
 
             var realEstateImages = await ShowImages(id);
@@ -112,7 +113,7 @@ namespace JekShop.Controllers
             var deleted = await _RealEstateServices.Delete(id);
             if (deleted == null)
             {
-                return NotFound();
+                return RealEstateNotFound(id);
             }
             return RedirectToAction(nameof(Index));
         }
@@ -124,7 +125,7 @@ namespace JekShop.Controllers
 
             if (update == null)
             {
-                return NotFound();
+                return RealEstateNotFound(id);
             }
 
             var realEstateImages = await ShowImages(id);
@@ -185,7 +186,7 @@ namespace JekShop.Controllers
 
             if (RealEstate == null)
             {
-                return NotFound();
+                return RealEstateNotFound(id);
             }
 
             var photo = await ShowImages(id);
@@ -219,6 +220,17 @@ namespace JekShop.Controllers
                 }).ToArrayAsync();
 
             return images;
+        }
+
+        // For notFound helper
+        private IActionResult RealEstateNotFound(Guid id)
+        {
+            var vm = new Error404ViewModel
+            {
+                WrongId = id
+            };
+
+            return View("NotFound", vm);
         }
 
     }

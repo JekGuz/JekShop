@@ -6,4 +6,9 @@ namespace JekShop.Models
 
         public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
     }
+
+    public class Error404ViewModel
+    {
+        public Guid WrongId { get; set; }
+    }
 }

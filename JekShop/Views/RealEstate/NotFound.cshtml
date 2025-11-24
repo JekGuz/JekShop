@@ -1,0 +1,16 @@
+﻿@model JekShop.Models.Error404ViewModel
+
+@{
+    ViewData["Title"] = "RealEstate not found";
+}
+
+<h1 class="display-1 fw-bold text-danger">Page Not Found</h1>
+<h2 class="display-1 fw-bold text-danger">Error 404</h2>
+
+<p>
+    Wrong ID: <strong>@Model.WrongId</strong> not found.
+</p>
+
+<a asp-action="Index" asp-controller="RealEstate" class="btn btn-secondary">
+    ← Home
+</a>
