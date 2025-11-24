@@ -117,6 +117,7 @@ namespace JekShop.Controllers
         public async Task<IActionResult> DeleteConfirmation(Guid id)
         {
             var deleted = await _RealEstateServices.Delete(id);
+
             if (deleted == null)
             {
                 return RealEstateNotFound(id);
@@ -243,6 +244,31 @@ namespace JekShop.Controllers
             };
 
             return View("NotFound", vm);
+        }
+
+        // удаления картинки из анкеты и базы
+        [HttpPost]
+        public async Task<IActionResult> RemoveImage(Guid imageId)
+        {
+            // находим картинку в БД
+            var image = await _context.FileToDatabases
+                .FirstOrDefaultAsync(x => x.Id == imageId);
+
+            if (image == null)
+            {
+                // если почему-то не нашли – покажем нашу 404
+                return RealEstateNotFound(imageId);
+            }
+
+            // запоминаем, к какому объекту недвижимости относилась картинка,
+            // чтобы после удаления вернуться на его Update
+            var realEstateId = image.RealEstateId;
+
+            _context.FileToDatabases.Remove(image);
+            await _context.SaveChangesAsync();
+
+            // возвращаемся на страницу редактирования этого объекта
+            return RedirectToAction("Update", new { id = realEstateId });
         }
 
     }
