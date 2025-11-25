@@ -83,7 +83,7 @@ namespace JekShop.ApplicationServices.Services
 
         public async Task<RealEstate> Update(RealEstateDto dto)
         {
-            // 1. Ищем существующую запись в БД
+            // Ищем существующую запись в БД
             var domain = await _context.RealEstates
                 .FirstOrDefaultAsync(x => x.Id == dto.Id);
 
@@ -92,7 +92,7 @@ namespace JekShop.ApplicationServices.Services
                 return null; // контроллер уже обрабатывает null
             }
 
-            // 2. Обновляем поля
+            // Обновляем поля
             domain.Area = dto.Area;
             domain.Location = dto.Location;
             domain.RoomNumber = dto.RoomNumber;

@@ -19,7 +19,6 @@ else
         <input asp-for="CreateAt" type="hidden" />
         <input asp-for="ModifiedAt" type="hidden" />
 
-        <!-- Поля объекта -->
         <div class="form-group row">
             <label asp-for="Area" class="col-sm-2 col-form-label"></label>
             <div class="col-sm-10">
@@ -59,27 +58,22 @@ else
 
         <hr />
 
-        <!-- Картинки -->
-        <h3>Images: </h3>
+        <h3>Existing images</h3>
         @foreach (var img in Model.Images)
         {
             <partial name="_Images" model="img" />
 
-            <form asp-action="RemoveImage"
-                  asp-controller="RealEstate"
-                  method="post"
-                  class="d-inline">
-                <input type="hidden" name="imageId" value="@img.Id" />
-                <button type="submit" class="btn btn-outline-danger">
-                    Remove Image
-                </button>
-            </form>
+            <button type="submit"
+                    class="btn btn-outline-danger mb-3"
+                    formmethod="post"
+                    formaction="@Url.Action("RemoveImage", "RealEstate", new { imageId = img.Id })">
+                Remove Image
+            </button>
 
             <br />
             <br />
         }
 
-        <!-- Блок кнопок -->
         <div class="form-group row mt-4">
             <div class="col-sm-10 offset-sm-2">
                 <button type="submit" class="btn btn-primary me-2">

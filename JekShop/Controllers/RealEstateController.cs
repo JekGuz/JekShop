@@ -80,12 +80,14 @@ namespace JekShop.Controllers
 
             var result = await _RealEstateServices.Create(dto);
 
+            // var realEstateId = result.ID
+
             if (result == null)
             {
                 return RedirectToAction(nameof(Index));
             }
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Index)); 
         }
 
         [HttpGet]
@@ -221,14 +223,15 @@ namespace JekShop.Controllers
         {
             var images = await _context.FileToDatabases
                 .Where(x => x.RealEstateId == id)
+                .OrderBy(x => x.Id) // сортировка по ид
                 .Select(y => new RealEstateImageVeiwModel
-                {
-                    RealEstateId = y.RealEstateId,
-                    Id = y.Id,
-                    ImageData = y.ImageData,
-                    ImageTitle = y.ImageTitle,
-                    Image = string.Format("data:image/gif;base64, {0}", Convert.ToBase64String(y.ImageData))
-                }).ToArrayAsync();
+            {
+                RealEstateId = y.RealEstateId,
+                Id = y.Id,
+                ImageData = y.ImageData,
+                ImageTitle = y.ImageTitle,
+                Image = $"data:image/gif;base64,{Convert.ToBase64String(y.ImageData)}"
+            }).ToArrayAsync();
 
             return images;
         }
