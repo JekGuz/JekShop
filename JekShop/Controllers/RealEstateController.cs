@@ -157,7 +157,6 @@ namespace JekShop.Controllers
         {
             if (!ModelState.IsValid)
             {
-                // 
                 return View("CreateUpdate", vm);
             }
 
@@ -179,17 +178,16 @@ namespace JekShop.Controllers
                         ImageData = x.ImageData,
                         RealEstateId = x.RealEstateId
                     }).ToArray(),
-
             };
 
             var result = await _RealEstateServices.Update(dto);
 
             if (result == null)
             {
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Update));
             }
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Update));
         }
 
         [HttpGet]

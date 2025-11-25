@@ -13,15 +13,16 @@ namespace JekShop.ApplicationServices.Services
         private readonly IFileServices _fileServices;
 
         public RealEstateServis
-            (
+        (
             JekShopContext context,
             IFileServices fileServices
-            )
+        )
         {
             _context = context;
             _fileServices = fileServices;
         }
-        public async Task <RealEstate> Create(RealEstateDto dto)
+
+        public async Task<RealEstate> Create(RealEstateDto dto)
         {
             RealEstate realestate = new RealEstate();
 
@@ -33,12 +34,11 @@ namespace JekShop.ApplicationServices.Services
             realestate.CreateAt = DateTime.Now;
             realestate.ModifiedAt = DateTime.Now;
 
-            // peaks kontrollima, kas failid on olemas või mitte
+            // Если есть файлы – грузим их в БД
             if (dto.Files != null)
             {
                 _fileServices.UploadFilesToDatabase(dto, realestate);
             }
-            
 
             await _context.RealEstates.AddAsync(realestate);
             await _context.SaveChangesAsync();
@@ -53,10 +53,16 @@ namespace JekShop.ApplicationServices.Services
 
             return result;
         }
+
         public async Task<RealEstate> Delete(Guid id)
         {
             var result = await _context.RealEstates
                 .FirstOrDefaultAsync(x => x.Id == id);
+
+            if (result == null)
+            {
+                return null;
+            }
 
             var images = await _context.FileToDatabases
                 .Where(x => x.RealEstateId == result.Id)
@@ -68,28 +74,47 @@ namespace JekShop.ApplicationServices.Services
                 }).ToArrayAsync();
 
             await _fileServices.RemoveImageFromDatabase(images);
+
             _context.RealEstates.Remove(result);
             await _context.SaveChangesAsync();
 
             return result;
         }
+
         public async Task<RealEstate> Update(RealEstateDto dto)
         {
-            RealEstate domain = new();
+            // 1. Ищем существующую запись в БД
+            var domain = await _context.RealEstates
+                .FirstOrDefaultAsync(x => x.Id == dto.Id);
 
-            domain.Id = dto.Id;
+            if (domain == null)
+            {
+                return null; // контроллер уже обрабатывает null
+            }
+
+            // 2. Обновляем поля
             domain.Area = dto.Area;
             domain.Location = dto.Location;
             domain.RoomNumber = dto.RoomNumber;
             domain.BuildingType = dto.BuildingType;
-            domain.CreateAt = dto.CreateAt;
+
+            // domain.CreateAt = dto.CreateAt;
+
             domain.ModifiedAt = DateTime.Now;
 
-            _context.RealEstates.Update(domain);
+            // Если при обновлении были загружены новые файлы – докинем их
+            if (dto.Files != null)
+            {
+                _fileServices.UploadFilesToDatabase(dto, domain);
+            }
+
             await _context.SaveChangesAsync();
 
             return domain;
         }
+    }
+}
+
 
 
         //public async Task<RealEstate> Update1(RealEstateDto dto)
@@ -111,5 +136,3 @@ namespace JekShop.ApplicationServices.Services
 
         //    return domain;
         //}
-    }
-}
