@@ -1,0 +1,57 @@
+﻿@model JekShop.Core.Dto.EmailDto
+
+@{
+    ViewData["Title"] = "Email saatmine";
+}
+
+<h2>Email saatmine</h2>
+
+@if (ViewBag.SuccessMessage != null)
+{
+    <div class="alert alert-success">
+        @ViewBag.SuccessMessage
+    </div>
+}
+
+<form asp-action="SendEmail"
+      asp-controller="Email"
+      method="post"
+      enctype="multipart/form-data">
+
+    @Html.AntiForgeryToken()
+
+    <!-- Saaja -->
+    <div class="mb-3">
+        <label asp-for="To" class="form-label">Saaja e-post</label>
+        <input asp-for="To" class="form-control" />
+        <span asp-validation-for="To" class="text-danger"></span>
+    </div>
+
+    <!-- Teema -->
+    <div class="mb-3">
+        <label asp-for="Subject" class="form-label">Teema</label>
+        <input asp-for="Subject" class="form-control" />
+    </div>
+
+    <!-- Sisu -->
+    <div class="mb-3">
+        <label asp-for="Body" class="form-label">Sisu</label>
+        <textarea asp-for="Body" class="form-control" rows="5"></textarea>
+    </div>
+
+    <!-- Failid -->
+    <div class="mb-3">
+        <label class="form-label">Manused (Attachments)</label>
+        <!-- Важно: имя поля = Attchmen -->
+        <input type="file" name="Attchmen" class="form-control" multiple />
+        <small class="form-text text-muted">
+            Saad valida mitu faili korraga.
+        </small>
+    </div>
+
+    <button type="submit" class="btn btn-outline-primary">Saada email</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

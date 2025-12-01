@@ -28,6 +28,8 @@ namespace JekShop
 
             builder.Services.AddHttpClient<ICocktailServices, CocktailService>();
 
+            builder.Services.AddTransient<IEmailServices, EmailServices>();
+
 
             builder.Services.AddDbContext<JekShopContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnections")));
