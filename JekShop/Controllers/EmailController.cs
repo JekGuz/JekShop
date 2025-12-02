@@ -1,6 +1,7 @@
 ﻿using JekShop.ApplicationServices.Services;
 using JekShop.Core.Dto;
 using JekShop.Core.ServiceInterface;
+using JekShop.Models.Chat;
 using JekShop.Models.Email;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

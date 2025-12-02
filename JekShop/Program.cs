@@ -2,6 +2,8 @@ using JekShop.Core.ServiceInterface;
 using JekShop.Data;
 using Microsoft.EntityFrameworkCore;
 using JekShop.ApplicationServices.Services;
+using JekShop.Hubs;
+using JekShop.Controllers;
 
 
 namespace JekShop
@@ -30,9 +32,13 @@ namespace JekShop
 
             builder.Services.AddTransient<IEmailServices, EmailServices>();
 
+            builder.Services.AddScoped<ChatController>();
+
 
             builder.Services.AddDbContext<JekShopContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnections")));
+
+            builder.Services.AddSignalR();
 
 
             var app = builder.Build();
@@ -57,6 +63,9 @@ namespace JekShop
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}")
                 .WithStaticAssets();
+
+            // app.MapRazorPages();
+            app.MapHub<UserHub>("/hubs/chat");
 
             app.Run();
         }
