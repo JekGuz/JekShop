@@ -1,0 +1,18 @@
+﻿@{
+    ViewData["Title"] = "Welcome";
+}
+
+<div class="d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="card shadow p-4" style="width: 420px; border-radius: 12px;">
+        <h2 class="text-center mb-3 text-success">You are successfully signed in! 🎉</h2>
+
+        @if (ViewBag.Username != null)
+        {
+            <p class="text-center">Welcome, <strong>@ViewBag.Username</strong></p>
+        }
+
+        <div class="text-center mt-4">
+            <a asp-action="Login" asp-controller="Accounts" class="btn btn-outline-info">Back</a>
+        </div>
+    </div>
+</div>

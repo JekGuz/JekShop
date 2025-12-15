@@ -1,9 +1,13 @@
+using JekShop.ApplicationServices.Services;
+using JekShop.Controllers;
+using JekShop.Core.Domain;
 using JekShop.Core.ServiceInterface;
 using JekShop.Data;
-using Microsoft.EntityFrameworkCore;
-using JekShop.ApplicationServices.Services;
 using JekShop.Hubs;
-using JekShop.Controllers;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.UI;
 
 
 namespace JekShop
@@ -38,6 +42,22 @@ namespace JekShop
             builder.Services.AddDbContext<JekShopContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnections")));
 
+
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+            {
+                options.SignIn.RequireConfirmedAccount = true;
+                options.Password.RequiredLength = 6;
+                options.Password.RequireDigit = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+            })
+                .AddEntityFrameworkStores<JekShopContext>()
+                .AddTokenProvider<DataProtectorTokenProvider<ApplicationUser>>("CustomEmailConfirmation")
+                //AddDefaultUI()
+                .AddDefaultTokenProviders();
+
+
+
             builder.Services.AddSignalR();
 
 
@@ -56,6 +76,7 @@ namespace JekShop
 
             app.UseStaticFiles();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapStaticAssets();

@@ -1,9 +1,11 @@
 ﻿using JekShop.Core.Domain;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace JekShop.Data
 {
-    public class JekShopContext : DbContext
+    public class JekShopContext : IdentityDbContext<ApplicationUser>
     {
         public JekShopContext(DbContextOptions<JekShopContext> options) : base(options) 
         { 
@@ -15,6 +17,8 @@ namespace JekShop.Data
         public DbSet<RealEstate> RealEstates { get; set; }
 
         public DbSet<FileToDatabase> FileToDatabases { get; set; }
+
+        public DbSet<IdentityRole> IdentityRoles { get; set; }
 
 
     }

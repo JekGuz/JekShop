@@ -79,7 +79,7 @@
         // 3. навешиваем обработчик на кнопку после загрузки DOM
         document.addEventListener("DOMContentLoaded", () => {
             const btn = document.getElementById("sendButton");
-            console.log("Нашли кнопку:", btn); // проверка
+            console.log("Push the button:", btn); // проверка
 
             if (!btn) return;
 
@@ -90,7 +90,7 @@
                 if (!subject && !body) return;
 
                 if (connection.state !== signalR.HubConnectionState.Connected) {
-                    console.warn("Соединение с хабом ещё не готово");
+                    console.warn("Dont ready connect");
                     return;
                 }
 
