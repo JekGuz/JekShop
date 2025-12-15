@@ -5,6 +5,8 @@ using JekShop.Core.Dto;
 using JekShop.Core.ServiceInterface;
 using JekShop.Models;
 using JekShop.Models.Accounts;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -29,6 +31,7 @@ namespace JekShop.Controllers
             _emailService = emailService;
         }
 
+        [AllowAnonymous]
         public IActionResult Register()
         {
             return View();
@@ -156,14 +159,55 @@ namespace JekShop.Controllers
 
             if (result.Succeeded)
             {
-                // 👉 вместо Redirect — показываем новое окно
+                // вместо Redirect — показываем новое окно
+                // Так как не отдельную страницу хочу а обратно на home
                 ViewBag.Username = vm.Email;
                 return View("LoginSuccess");
+                //return RedirectToAction("Index", "Home");
             }
 
             ModelState.AddModelError("", "Invalid login attempt.");
             return View(vm);
         }
+
+        // В классе login
+        //[HttpPost]
+        //[AllowAnonymous]
+        //public async Task<IActionResult> Login(LoginViewModel model, string? returnUrl)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        var user = await _userManager.FindByEmailAsync(model.Email);
+
+        //        if (user != null && !user.EmailConfirmed &&
+        //            (await _userManager.CheckPasswordAsync(user, model.Password)))
+        //        {
+        //            ModelState.AddModelError(string.Empty, "Email not confirmed yet");
+        //            return View(model);
+        //        }
+        //        var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, true);
+
+        // 
+        // if (result.Succeeded)
+        // {
+        //     if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+        //     {
+        //         return Redirect(returnUrl);
+        //      }
+        //     else
+        //     {
+        //         return RedirectToAction("Index", "Home");
+        //     }
+        // }
+        // if (result.IsLockedOut)
+        // {
+        //     return View("AccountLocked");
+        // }
+        // ModelState.AddModelError("", "Invalid login attempt.");
+        // }
+        // return View(model);
+        // }
+
 
         [AllowAnonymous]
         public IActionResult ForgotPassword()
@@ -253,6 +297,53 @@ namespace JekShop.Controllers
             }
 
             return View(vm);
+        }
+
+        [Authorize]
+        [HttpGet]
+        public IActionResult ChangePassword()
+        {
+            return View(new ChangePasswordViewModel());
+        }
+
+        [Authorize]
+        [HttpGet]
+        public IActionResult ChangePasswordConfirmation()
+        {
+            return View();
+        }
+
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangePassword(ChangePasswordViewModel vm)
+        {
+            if (!ModelState.IsValid)
+                return View(vm);
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+                return RedirectToAction("Login", "Accounts");
+
+            var result = await _userManager.ChangePasswordAsync(user, vm.CurrentPassword!, vm.NewPassword!);
+
+            if (result.Succeeded)
+            {
+                await _signInManager.RefreshSignInAsync(user);
+                // TempData["SuccessMessage"] = "Password changed successfully.";
+                return RedirectToAction(nameof(ChangePasswordConfirmation));
+            }
+
+            foreach (var error in result.Errors)
+                ModelState.AddModelError("", error.Description);
+
+            return View(vm);
+        }
+
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            return RedirectToAction("Index", "Home");
         }
 
     }

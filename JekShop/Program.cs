@@ -4,10 +4,12 @@ using JekShop.Core.Domain;
 using JekShop.Core.ServiceInterface;
 using JekShop.Data;
 using JekShop.Hubs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.UI;
+using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace JekShop
@@ -56,10 +58,23 @@ namespace JekShop
                 //AddDefaultUI()
                 .AddDefaultTokenProviders();
 
+            builder.Services.AddControllersWithViews(options =>
+            {
+                var policy = new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    .Build();
 
+                options.Filters.Add(new AuthorizeFilter(policy));
+            });
+
+
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/Accounts/Login";
+                options.AccessDeniedPath = "/Accounts/Login";
+            });
 
             builder.Services.AddSignalR();
-
 
             var app = builder.Build();
 

@@ -80,6 +80,8 @@ namespace JekShop.ApplicationServices.Services
         public void SendEmailToken(EmailTokenDto dto, string token)
         {
             dto.Token = token;
+            var email = new MimeMessage();
+
 
 
             email.From.Add(MailboxAddress.Parse(_config.GetSection("EmailUserName").Value));
