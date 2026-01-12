@@ -7,6 +7,7 @@ using JekShop.Data;
 using JekShop.Data.Migrations;
 using JekShop.Models;
 using JekShop.Models.RealEstate;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -26,6 +27,8 @@ namespace JekShop.Controllers
             _RealEstateServices = RealEstateServices;
         }
 
+        //[Authorize(User = "Jekat")]
+        //[Authorize(Roles = "Admin")]
         public IActionResult Index()
         {
             var result = _context.RealEstates

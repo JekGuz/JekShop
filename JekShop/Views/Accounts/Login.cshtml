@@ -4,6 +4,13 @@
     ViewData["Title"] = "Login";
 }
 
+@if (TempData["ExternalError"] != null)
+{
+    <div class="alert alert-danger mt-3">
+        @TempData["ExternalError"]
+    </div>
+}
+
 <div class="container mt-5">
     <div class="row">
         <!-- Local Login -->
@@ -47,6 +54,22 @@
         <div class="col-md-6">
             <h2>External Login</h2>
             <hr />
+
+                <form asp-controller="Accounts" asp-action="ExternalLogin" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+
+                    <button type="submit" name="provider" value="Google" class="btn btn-outline-danger w-100 mb-2">
+                        Continue with Google
+                    </button>
+
+                    <button type="submit" name="provider" value="Facebook" class="btn btn-outline-primary w-100">
+                        Continue with Facebook
+                    </button>
+                </form>
+            </div>
+
         </div>
     </div>
 </div>

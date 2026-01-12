@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Security.Claims;
 using AspNetCoreGeneratedDocument;
 using JekShop.Core.Domain;
 using JekShop.Core.Dto;
@@ -155,7 +156,7 @@ namespace JekShop.Controllers
                 vm.Email,
                 vm.Password,
                 vm.RememberMe,
-                false);
+                lockoutOnFailure: true); // важно для блокировки
 
             if (result.Succeeded)
             {
@@ -163,12 +164,44 @@ namespace JekShop.Controllers
                 // Так как не отдельную страницу хочу а обратно на home
                 ViewBag.Username = vm.Email;
                 return View("LoginSuccess");
-                //return RedirectToAction("Index", "Home");
+                // return RedirectToAction("Index", "Home");
             }
 
+            // если аккаунт заблокирован
+            if (result.IsLockedOut)
+            {
+                return RedirectToAction(
+                    nameof(AccountLocked),
+                    new { email = vm.Email }
+                );
+            }
+
+            // неверный логин или пароль
             ModelState.AddModelError("", "Invalid login attempt.");
             return View(vm);
         }
+
+        [AllowAnonymous]
+        [HttpGet]
+        public async Task<IActionResult> AccountLocked(string? email = null)
+        {
+            if (string.IsNullOrEmpty(email))
+                return View();
+
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user?.LockoutEnd != null)
+            {
+                var remaining = user.LockoutEnd.Value - DateTimeOffset.UtcNow;
+
+                if (remaining.TotalSeconds > 0)
+                {
+                    ViewBag.RemainingMinutes = Math.Ceiling(remaining.TotalMinutes);
+                }
+            }
+
+            return View();
+        }
+
 
         // В классе login
         //[HttpPost]
@@ -288,6 +321,10 @@ namespace JekShop.Controllers
 
             if (result.Succeeded)
             {
+                if (await _userManager.IsLockedOutAsync(user))
+                {
+                    await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.UtcNow);
+                }
                 return View("ResetPasswordConfirmation");
             }
 
@@ -345,6 +382,137 @@ namespace JekShop.Controllers
             await _signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
         }
+
+        // ----------------------------------------------  Google/Facebook login --------------------------------------------
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public IActionResult ExternalLogin(string provider, string? returnUrl = null)
+        {
+            // если returnUrl не передали — по умолчанию на главную
+            returnUrl ??= Url.Content("~/");
+
+            // после успешного логина у провайдера (Google/Facebook) вернёмся сюда
+            var redirectUrl = Url.Action(nameof(ExternalLoginCallback), "Accounts", new { returnUrl });
+
+            // эти properties содержат returnUrl и данные для external cookie
+            var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+
+            // отправляем пользователя на Google/Facebook
+            return Challenge(properties, provider);
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
+        public async Task<IActionResult> ExternalLoginCallback(string? returnUrl = null, string? remoteError = null)
+        {
+            returnUrl ??= Url.Content("~/");
+
+            if (!string.IsNullOrEmpty(remoteError))
+            {
+                TempData["ExternalError"] = $"External provider error: {remoteError}";
+                return RedirectToAction(nameof(Login));
+            }
+
+            var info = await _signInManager.GetExternalLoginInfoAsync();
+            if (info == null)
+            {
+                TempData["ExternalError"] = "External login info is missing (info == null). Usually cookies/SameSite issue.";
+                return RedirectToAction(nameof(Login));
+            }
+
+            // 1) если логин уже привязан — просто входим
+            var signInResult = await _signInManager.ExternalLoginSignInAsync(
+                info.LoginProvider,
+                info.ProviderKey,
+                isPersistent: false,
+                bypassTwoFactor: true);
+
+            if (signInResult.IsLockedOut)
+            {
+                var emailLocked = info.Principal.FindFirstValue(ClaimTypes.Email);
+                return RedirectToAction(nameof(AccountLocked), new { email = emailLocked });
+            }
+
+            if (signInResult.Succeeded)
+            {
+                await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme); // очистить внешнюю куку
+                ViewBag.Username =
+                    info.Principal.FindFirstValue(ClaimTypes.Email)
+                    ?? info.Principal.Identity?.Name
+                    ?? "External user";
+                return View("LoginSuccess");
+            }
+
+            // 2) достаём email
+            var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+
+            if (string.IsNullOrEmpty(email))
+            {
+                TempData["ExternalError"] = "Provider did not return email.";
+                return RedirectToAction(nameof(Login));
+            }
+
+            var user = await _userManager.FindByEmailAsync(email);
+
+            if (user == null)
+            {
+                user = new ApplicationUser
+                {
+                    UserName = email,
+                    Email = email,
+                    Name = email,
+                    EmailConfirmed = true
+                };
+
+                var createResult = await _userManager.CreateAsync(user);
+                if (!createResult.Succeeded)
+                {
+                    TempData["ExternalError"] = string.Join(", ", createResult.Errors.Select(e => e.Description));
+                    return RedirectToAction(nameof(Login));
+                }
+            }
+
+            // 3) снять блокировку, если была
+            if (await _userManager.IsLockedOutAsync(user))
+            {
+                await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.UtcNow);
+                await _userManager.ResetAccessFailedCountAsync(user);
+            }
+
+            // 4) привязать логин
+            var addLoginResult = await _userManager.AddLoginAsync(user, info);
+            if (!addLoginResult.Succeeded)
+            {
+                // если уже привязан — просто продолжаем
+                // если хочешь увидеть причину — раскомментируй:
+                // TempData["ExternalError"] = string.Join(", ", addLoginResult.Errors.Select(e => e.Description));
+                // return RedirectToAction(nameof(Login));
+            }
+
+            // 5) теперь повторно пробуем ExternalLoginSignInAsync (надёжнее)
+            var finalSignIn = await _signInManager.ExternalLoginSignInAsync(
+                info.LoginProvider,
+                info.ProviderKey,
+                isPersistent: false,
+                bypassTwoFactor: true);
+
+            if (!finalSignIn.Succeeded)
+            {
+                // fallback
+                await _signInManager.SignInAsync(user, isPersistent: false);
+            }
+
+            await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme); // очистить внешнюю куку
+
+            ViewBag.Username = user.Email ?? user.UserName ?? "External user";
+            return View("LoginSuccess");
+        }
+
+
+
+
+
 
     }
 }
